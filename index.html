@@ -143,25 +143,6 @@
         </nav>
 
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-            <!-- Statistik Card -->
-            <div class="grid grid-cols-3 gap-3 sm:gap-6 mb-8">
-                <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-center relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-indigo-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-                    <span class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 relative z-10">Total Matkul</span>
-                    <span class="text-3xl sm:text-4xl font-extrabold text-slate-800 relative z-10" id="statMatkul">0</span>
-                </div>
-                <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-center relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-                    <span class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 relative z-10">Tugas Selesai</span>
-                    <span class="text-3xl sm:text-4xl font-extrabold text-emerald-500 relative z-10" id="statDone">0</span>
-                </div>
-                <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex flex-col justify-center relative overflow-hidden group">
-                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-rose-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-                    <span class="text-slate-500 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 relative z-10">Tersisa</span>
-                    <span class="text-3xl sm:text-4xl font-extrabold text-rose-500 relative z-10" id="statLeft">0</span>
-                </div>
-            </div>
-
             <!-- Dashboard Container (Digenerate via JS) -->
             <div id="dashboardContainer" class="space-y-10">
                 <div class="text-center py-20 text-slate-400">Memuat data dari server...</div>
@@ -781,13 +762,11 @@
                 container.innerHTML += html;
             });
 
-            updateStats(subjects.length, totalDone, totalTarget - totalDone);
+            // updateStats dihapus karena KPI card sudah tidak ada
         }
 
         function updateStats(matkul, done, left) {
-            document.getElementById('statMatkul').textContent = matkul;
-            document.getElementById('statDone').textContent = done;
-            document.getElementById('statLeft').textContent = left;
+            // Fungsi ini dikosongkan karena elemennya sudah dihapus
         }
 
         function showToast(msg, type="info") {
