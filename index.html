@@ -2,293 +2,145 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>E-Learning Tracker UT</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Tugas UT</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        /* Menyembunyikan scrollbar untuk tampilan mobile yang bersih */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #f8fafc; /* Slate 50 */
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        /* Menghilangkan panah spinner pada input number */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
-        input[type=number] { -moz-appearance: textfield; }
-
-        /* Utilitas untuk menyembunyikan scrollbar tapi tetap bisa di-scroll (untuk mobile swipe) */
-        .hide-scrollbar {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
-        }
-
-        /* Checkbox Modern & Premium */
-        .premium-checkbox {
-            appearance: none;
-            width: 1.5rem;
-            height: 1.5rem;
-            border: 2px solid #cbd5e1;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            background-color: white;
-            flex-shrink: 0;
-        }
-        .premium-checkbox:hover:not(:disabled) {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-        }
-        .premium-checkbox:checked {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            animation: pop 0.3s ease-out forwards;
-        }
-        .premium-checkbox:checked::after {
-            content: '';
-            position: absolute;
-            left: 7px;
-            top: 3px;
-            width: 6px;
-            height: 12px;
-            border: solid white;
-            border-width: 0 2.5px 2.5px 0;
-            transform: rotate(45deg);
-        }
-        .premium-checkbox:disabled {
-            background-color: #f1f5f9;
-            border-color: #e2e8f0;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        @keyframes pop {
-            0% { transform: scale(0.95); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Modal Transitions */
-        #modalBackdrop { transition: opacity 0.3s ease-out; }
-        #modalPanel { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease-out; }
-        
-        /* Smooth Collapse */
-        .collapse-content {
-            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-        }
-        .collapse-content.open {
-            max-height: 500px; /* Cukup tinggi untuk konten */
-            opacity: 1;
-        }
+        /* Animasi Modal */
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .modal-animate { animation: modalFadeIn 0.2s ease-out forwards; }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-20">
 
-    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 shadow-sm">
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16 sm:h-20">
-                <div class="flex items-center gap-3 sm:gap-4">
-                    <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 p-2 sm:p-2.5 rounded-xl sm:rounded-2xl shadow-lg shadow-indigo-200">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0v6"></path></svg>
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-xl">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                     </div>
                     <div>
-                        <h1 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-tight">Tracker UT</h1>
-                        <p class="text-[10px] sm:text-xs text-slate-500 font-medium">Universitas Terbuka</p>
+                        <h1 class="text-lg font-bold text-slate-900 leading-tight">Tugas UT</h1>
+                        <p class="text-xs text-slate-500 hidden sm:block">Sinkronisasi Cloud Aktif</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2 sm:gap-4">
-                    <div id="connectionStatus" class="hidden sm:flex px-3 py-1.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-semibold items-center shadow-sm transition-colors">
-                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2 animate-pulse"></span> Sinkronisasi...
-                    </div>
-                    <!-- Status bulat untuk mobile -->
-                    <div id="mobileConnectionStatus" class="sm:hidden w-3 h-3 rounded-full bg-amber-500 animate-pulse"></div>
 
-                    <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 shadow-indigo-200 flex items-center gap-2">
+                <div class="flex items-center gap-3">
+                    <!-- User Profile & Logout -->
+                    <div id="userProfileBtn" class="hidden items-center gap-2">
+                        <div class="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span id="userEmailDisplay" class="hidden sm:inline truncate max-w-[100px]">Anonim</span>
+                        </div>
+                    </div>
+                    <button onclick="document.getElementById('addModal').classList.remove('hidden')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-sm shadow-indigo-200 transition-all flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         <span class="hidden sm:inline">Tambah Matkul</span>
-                        <span class="sm:hidden">Tambah</span>
                     </button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        
-        <!-- Statistik Card -->
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 sm:p-6 flex flex-col justify-center relative overflow-hidden group">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
-                <div class="flex items-center gap-3 sm:gap-4 mb-2">
-                    <div class="bg-indigo-100 p-2 sm:p-3 rounded-xl text-indigo-600">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    </div>
-                    <p class="text-xs sm:text-sm text-slate-500 font-semibold uppercase tracking-wider">Mata Kuliah</p>
-                </div>
-                <p class="text-3xl sm:text-4xl font-extrabold text-slate-900" id="statTotalMatkul">0</p>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <!-- Statistik -->
+        <div class="grid grid-cols-3 gap-3 sm:gap-6 mb-8">
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-center">
+                <span class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Mata Kuliah</span>
+                <span class="text-2xl sm:text-3xl font-bold text-indigo-600" id="statMatkul">0</span>
             </div>
-            
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 sm:p-6 flex flex-col justify-center relative overflow-hidden group">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
-                <div class="flex items-center gap-3 sm:gap-4 mb-2">
-                    <div class="bg-emerald-100 p-2 sm:p-3 rounded-xl text-emerald-600">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <p class="text-xs sm:text-sm text-slate-500 font-semibold uppercase tracking-wider">Diselesaikan</p>
-                </div>
-                <p class="text-3xl sm:text-4xl font-extrabold text-emerald-600" id="statSelesai">0</p>
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-center">
+                <span class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Selesai</span>
+                <span class="text-2xl sm:text-3xl font-bold text-emerald-500" id="statDone">0</span>
             </div>
-
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 sm:p-6 flex flex-col justify-center relative overflow-hidden group col-span-2 md:col-span-1">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500"></div>
-                <div class="flex items-center gap-3 sm:gap-4 mb-2">
-                    <div class="bg-amber-100 p-2 sm:p-3 rounded-xl text-amber-600">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <p class="text-xs sm:text-sm text-slate-500 font-semibold uppercase tracking-wider">Menunggu</p>
-                </div>
-                <p class="text-3xl sm:text-4xl font-extrabold text-amber-500" id="statMenunggu">0</p>
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-center">
+                <span class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-1">Tersisa</span>
+                <span class="text-2xl sm:text-3xl font-bold text-amber-500" id="statLeft">0</span>
             </div>
         </div>
 
-        <!-- Wadah Render Dinamis -->
-        <div id="dashboardContainer" class="space-y-8 sm:space-y-12 pb-20">
-            <!-- Data akan dirender di sini via JavaScript -->
+        <!-- Container Utama Dashboard -->
+        <div id="dashboardContainer" class="space-y-8">
+            <!-- Konten digenerate via JS -->
+            <div class="text-center py-10 text-slate-400">
+                Memuat data...
+            </div>
         </div>
-
     </main>
 
-    <div id="addModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <!-- Backdrop -->
-        <div id="modalBackdrop" onclick="closeModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm opacity-0 transition-opacity"></div>
-
-        <!-- Panel -->
-        <div id="modalPanel" class="relative w-full sm:max-w-2xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl transform transition-all opacity-0 translate-y-full sm:translate-y-4 sm:scale-95 flex flex-col max-h-[90vh]">
-            
-            <!-- Header Modal -->
-            <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center shrink-0">
-                <div class="flex items-center gap-3">
-                    <div class="bg-indigo-50 p-2 rounded-xl text-indigo-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900" id="modal-title">Mata Kuliah Baru</h3>
-                        <p class="text-xs text-slate-500">Tambahkan matkul untuk dilacak sesinya.</p>
-                    </div>
-                </div>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 p-2 rounded-full transition-colors focus:outline-none">
+    <div id="addModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl modal-animate overflow-hidden">
+            <div class="flex justify-between items-center p-5 border-b border-slate-100">
+                <h3 class="text-lg font-bold text-slate-800">Tambah Mata Kuliah</h3>
+                <button onclick="document.getElementById('addModal').classList.add('hidden')" class="text-slate-400 hover:bg-slate-100 p-2 rounded-full transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-
-            <!-- Body Modal (Scrollable Form) -->
-            <form id="addMatkulForm" class="overflow-y-auto p-6 flex-1 hide-scrollbar">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Mata Kuliah</label>
-                        <input type="text" id="nama" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-slate-800" placeholder="Contoh: Manajemen Pemasaran">
-                    </div>
-                    
+            <form id="addMatkulForm" class="p-5 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kode MK</label>
-                        <input type="text" id="kode" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all uppercase text-slate-800 font-mono tracking-wider" placeholder="Contoh: EKMA4116">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Semester</label>
-                        <select id="semester" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-slate-800 cursor-pointer">
-                            <option value="Semester 1">Semester 1</option>
-                            <option value="Semester 2">Semester 2</option>
-                            <option value="Semester 3">Semester 3</option>
-                            <option value="Semester 4">Semester 4</option>
-                            <option value="Semester 5">Semester 5</option>
-                            <option value="Semester 6">Semester 6</option>
-                            <option value="Semester 7">Semester 7</option>
-                            <option value="Semester 8">Semester 8</option>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Semester</label>
+                        <select id="matkulSemester" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
                         </select>
                     </div>
-                    
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Kategori</label>
-                        <select id="kategori" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-slate-800 cursor-pointer">
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Kategori</label>
+                        <select id="matkulKategori" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                             <option value="Wajib">Wajib</option>
                             <option value="Pilihan">Pilihan</option>
+                            <option value="Praktik">Praktik/Praktikum</option>
                             <option value="TAP">TAP</option>
-                            <option value="Ulang / SP">Ulang / SP</option>
                         </select>
                     </div>
-                    
-                    <div class="hidden sm:block"></div> <!-- Spacer -->
-
-                    <div class="sm:col-span-2 relative mt-2">
-                        <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                            <div class="w-full border-t border-slate-200"></div>
-                        </div>
-                        <div class="relative flex justify-center">
-                            <span class="px-3 bg-white text-xs font-semibold text-slate-400 uppercase tracking-wide">Informasi Tutor</span>
-                        </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5">Kode Matkul</label>
+                    <input type="text" id="matkulCode" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none uppercase" placeholder="Misal: EKMA4111">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1.5">Nama Matkul</label>
+                    <input type="text" id="matkulName" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Misal: Pengantar Bisnis">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Dosen 1 (Wajib)</label>
+                        <input type="text" id="matkulDosen1" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Nama Dosen">
                     </div>
-
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Dosen 1 (Wajib)</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            </div>
-                            <input type="text" id="dosen1" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-slate-800" placeholder="Nama Tutor Utama">
-                        </div>
-                    </div>
-                    <div class="sm:col-span-2">
-                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Dosen 2 <span class="text-slate-400 font-normal">(Opsional)</span></label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                            </div>
-                            <input type="text" id="dosen2" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-slate-800" placeholder="Nama Tutor Pendamping">
-                        </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Dosen 2 (Opsional)</label>
+                        <input type="text" id="matkulDosen2" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Nama Dosen 2">
                     </div>
                 </div>
+                <button type="submit" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md">Simpan Mata Kuliah</button>
             </form>
-
-            <!-- Footer Modal -->
-            <div class="p-5 border-t border-slate-100 bg-slate-50 rounded-b-3xl shrink-0 flex flex-col-reverse sm:flex-row justify-end gap-3">
-                <button type="button" onclick="closeModal()" class="w-full sm:w-auto px-6 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 transition-colors focus:outline-none">
-                    Batal
-                </button>
-                <button type="button" onclick="document.getElementById('addMatkulForm').requestSubmit()" class="w-full sm:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 shadow-indigo-200 transition-all focus:outline-none">
-                    Simpan Matkul
-                </button>
-            </div>
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-6 right-6 transform transition-all duration-300 translate-y-24 opacity-0 bg-white rounded-2xl shadow-xl border border-slate-100 p-4 flex items-center z-[70] max-w-sm pointer-events-none">
+    <div id="toast" class="fixed bottom-6 right-6 transform transition-all duration-300 translate-y-24 opacity-0 bg-white rounded-2xl shadow-xl border border-slate-100 p-4 flex items-center z-[110] max-w-sm pointer-events-none">
         <div id="toastIcon" class="mr-3 flex-shrink-0"></div>
-        <div id="toastMessage" class="text-sm font-bold text-slate-700"></div>
+        <div><p id="toastMessage" class="text-sm font-bold text-slate-800"></p></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Konfigurasi Firebase Anda
         const firebaseConfig = {
             apiKey: "AIzaSyB0RWNNQ-wxedZDlEEADkRpI5HmuCmgeiU",
             authDomain: "unoversitas-terbuka.firebaseapp.com",
@@ -302,14 +154,15 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // State Aplikasi
         let userId = null;
         let subjects = [];
         let semesterDates = {};
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'dashboard-ut-v3';
-        
-        // Aturan Kolom UT (8 Sesi)
-        const SESSIONS = [
+        let unsubSubjects = null;
+        let unsubDates = null;
+        const appId = "tugas_ut_v3";
+
+        // Struktur Sesi UT (1-8), Sesi 3, 5, 7 digabung dengan Tugas
+        const sessions = [
             { id: 's1', label: 'Sesi 1', isTask: false },
             { id: 's2', label: 'Sesi 2', isTask: false },
             { id: 's3', label: 'Sesi 3', isTask: false, hasTask: true, taskId: 't1', taskLabel: 'Tugas 1' },
@@ -321,450 +174,339 @@
         ];
 
         async function init() {
-            try {
-                // Langsung gunakan login anonim untuk menghindari custom-token-mismatch
-                await signInAnonymously(auth);
+            onAuthStateChanged(auth, async (user) => {
+                const userProfileBtn = document.getElementById('userProfileBtn');
                 
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        updateConnectionStatus(true);
-                        setupRealtimeListeners();
-                    } else {
-                        updateConnectionStatus(false);
+                if (user) {
+                    userId = user.uid;
+                    document.getElementById('userEmailDisplay').textContent = "Siswa Anonim";
+                    userProfileBtn.classList.remove('hidden');
+                    userProfileBtn.classList.add('flex');
+                    setupRealtimeListeners();
+                } else {
+                    userId = null;
+                    userProfileBtn.classList.add('hidden');
+                    userProfileBtn.classList.remove('flex');
+                    if(unsubSubjects) unsubSubjects();
+                    if(unsubDates) unsubDates();
+                    document.getElementById('dashboardContainer').innerHTML = '';
+                    updateStats(0,0,0);
+                    
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (error) {
+                        showToast("Gagal terhubung ke Cloud", "error");
                     }
-                });
-            } catch (error) {
-                console.error("Auth Error:", error);
-                updateConnectionStatus(false);
-                showToast("Gagal terhubung ke database. Pastikan Login Anonim aktif di Firebase.", "error");
-            }
+                }
+            });
 
             document.getElementById('addMatkulForm').addEventListener('submit', handleAddMatkul);
         }
 
-        function updateConnectionStatus(isConnected) {
-            const statusEl = document.getElementById('connectionStatus');
-            const mobileStatusEl = document.getElementById('mobileConnectionStatus');
-            
-            if (isConnected) {
-                statusEl.className = "hidden sm:flex px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-semibold items-center shadow-sm transition-colors";
-                statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2"></span> Tersambung';
-                mobileStatusEl.className = "sm:hidden w-3 h-3 rounded-full bg-emerald-500 border border-white shadow-sm";
-            } else {
-                statusEl.className = "hidden sm:flex px-3 py-1.5 bg-rose-50 text-rose-700 border border-rose-200 rounded-full text-xs font-semibold items-center shadow-sm transition-colors";
-                statusEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-2"></span> Terputus';
-                mobileStatusEl.className = "sm:hidden w-3 h-3 rounded-full bg-rose-500 border border-white shadow-sm";
-            }
-        }
-
-        window.openModal = function() {
-            const modal = document.getElementById('addModal');
-            const backdrop = document.getElementById('modalBackdrop');
-            const panel = document.getElementById('modalPanel');
-            
-            modal.classList.remove('hidden');
-            void modal.offsetWidth; // Trigger reflow
-            
-            backdrop.classList.add('opacity-100');
-            backdrop.classList.remove('opacity-0');
-            
-            panel.classList.add('opacity-100', 'translate-y-0', 'scale-100');
-            panel.classList.remove('opacity-0', 'translate-y-full', 'sm:translate-y-4', 'sm:scale-95');
-        }
-
-        window.closeModal = function() {
-            const backdrop = document.getElementById('modalBackdrop');
-            const panel = document.getElementById('modalPanel');
-            
-            backdrop.classList.remove('opacity-100');
-            backdrop.classList.add('opacity-0');
-            
-            panel.classList.remove('opacity-100', 'translate-y-0', 'scale-100');
-            panel.classList.add('opacity-0', 'translate-y-full', 'sm:translate-y-4', 'sm:scale-95');
-            
-            setTimeout(() => {
-                document.getElementById('addModal').classList.add('hidden');
-                document.getElementById('addMatkulForm').reset();
-            }, 400); 
-        }
-
         window.toggleDateSettings = function(semesterId) {
-            const content = document.getElementById(`date-settings-${semesterId}`);
-            const icon = document.getElementById(`icon-settings-${semesterId}`);
-            if (content.classList.contains('open')) {
-                content.classList.remove('open');
-                icon.style.transform = 'rotate(0deg)';
-            } else {
-                content.classList.add('open');
+            const panel = document.getElementById(`datePanel-${semesterId}`);
+            const icon = document.getElementById(`dateIcon-${semesterId}`);
+            if (panel.classList.contains('hidden')) {
+                panel.classList.remove('hidden');
                 icon.style.transform = 'rotate(180deg)';
+            } else {
+                panel.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
             }
         }
 
         function setupRealtimeListeners() {
             if (!userId) return;
             
-            // Listener Matkul
             const subjectsRef = collection(db, `artifacts/${appId}/users/${userId}/matkul`);
-            onSnapshot(subjectsRef, (snapshot) => {
+            unsubSubjects = onSnapshot(subjectsRef, (snapshot) => {
                 subjects = [];
                 snapshot.forEach((doc) => { subjects.push({ id: doc.id, ...doc.data() }); });
                 renderDashboard();
-            }, (error) => { console.error(error); showToast("Gagal memuat data", "error"); });
+            });
 
-            // Listener Tanggal per Semester
             const datesRef = collection(db, `artifacts/${appId}/users/${userId}/dates`);
-            onSnapshot(datesRef, (snapshot) => {
+            unsubDates = onSnapshot(datesRef, (snapshot) => {
                 semesterDates = {};
                 snapshot.forEach((doc) => { semesterDates[doc.id] = doc.data(); });
                 renderDashboard();
-            }, (error) => { console.error(error); });
+            });
         }
 
         async function handleAddMatkul(e) {
             e.preventDefault();
-            if (!userId) return showToast("Menunggu koneksi database...", "error");
+            if (!userId) return;
 
-            const matkulId = 'mk_' + Date.now();
-            const data = {
-                nama: document.getElementById('nama').value.trim(),
-                kode: document.getElementById('kode').value.trim().toUpperCase(),
-                semester: document.getElementById('semester').value,
-                kategori: document.getElementById('kategori').value,
-                dosen1: document.getElementById('dosen1').value.trim(),
-                dosen2: document.getElementById('dosen2').value.trim(),
-                progress: {},
-                nilai: {}
+            const newMatkul = {
+                code: document.getElementById('matkulCode').value.toUpperCase(),
+                name: document.getElementById('matkulName').value,
+                semester: document.getElementById('matkulSemester').value,
+                kategori: document.getElementById('matkulKategori').value,
+                dosen1: document.getElementById('matkulDosen1').value,
+                dosen2: document.getElementById('matkulDosen2').value,
+                tasks: {} // Format: { s1: true, t1: false, ... }
             };
 
-            // Setup default false/kosong untuk semua sesi
-            SESSIONS.forEach(sesi => {
-                data.progress[sesi.id] = false;
-                data.nilai[sesi.id] = '';
-                if (sesi.hasTask) {
-                    data.progress[sesi.taskId] = false;
-                    data.nilai[sesi.taskId] = '';
-                }
-            });
-
+            const docId = `mk_${Date.now()}`;
             try {
-                await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, matkulId), data);
-                closeModal();
-                showToast("Mata kuliah berhasil ditambahkan", "success");
-            } catch (error) {
+                await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, docId), newMatkul);
+                document.getElementById('addModal').classList.add('hidden');
+                document.getElementById('addMatkulForm').reset();
+                showToast("Mata kuliah ditambahkan", "success");
+            } catch (err) {
                 showToast("Gagal menyimpan data", "error");
             }
         }
 
-        window.updateProgress = async function(matkulId, key, isChecked) {
-            if (!userId) return;
-            const subject = subjects.find(s => s.id === matkulId);
-            if (!subject) return;
-
-            subject.progress[key] = isChecked;
-            try { await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, matkulId), subject); } 
-            catch (error) { showToast("Gagal mengupdate status", "error"); }
-        }
-
-        window.updateNilai = async function(matkulId, key, value) {
-            if (!userId) return;
-            const subject = subjects.find(s => s.id === matkulId);
-            if (!subject) return;
-
-            subject.nilai[key] = value;
-            try { await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, matkulId), subject); } 
-            catch (error) { showToast("Gagal menyimpan nilai", "error"); }
-        }
-
-        window.updateDate = async function(semester, sesiId, type, value) {
-            if (!userId) return;
-            if (!semesterDates[semester]) semesterDates[semester] = {};
-            if (!semesterDates[semester][sesiId]) semesterDates[semester][sesiId] = { start: '', end: '' };
-            
-            semesterDates[semester][sesiId][type] = value;
-            try { await setDoc(doc(db, `artifacts/${appId}/users/${userId}/dates`, semester), semesterDates[semester]); } 
-            catch (error) { showToast("Gagal menyimpan tanggal", "error"); }
-        }
-
-        window.hapusMatkul = async function(matkulId) {
-            if (!userId) return;
-            if(!confirm("Yakin ingin menghapus mata kuliah ini?")) return;
-            try {
-                await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, matkulId));
+        window.deleteMatkul = async function(id) {
+            if(confirm("Hapus mata kuliah ini?")) {
+                await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, id));
                 showToast("Mata kuliah dihapus", "success");
-            } catch (error) { showToast("Gagal menghapus", "error"); }
+            }
         }
 
-        function checkDateStatus(start, end) {
-            if (!start || !end) return { status: 'none', label: 'Pilih Tanggal', isLocked: false, isOverdue: false };
-            
-            const today = new Date(); today.setHours(0,0,0,0);
-            const sDate = new Date(start); sDate.setHours(0,0,0,0);
-            const eDate = new Date(end); eDate.setHours(23,59,59,999);
-            
-            const formatDate = (d) => {
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-                return `${d.getDate()} ${months[d.getMonth()]}`;
-            };
-            const label = `${formatDate(sDate)} - ${formatDate(eDate)}`;
+        window.toggleTask = async function(matkulId, taskId, isChecked) {
+            const matkul = subjects.find(s => s.id === matkulId);
+            if (!matkul) return;
+            matkul.tasks[taskId] = isChecked;
+            await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, matkulId), { tasks: matkul.tasks }, { merge: true });
+        }
 
-            if (today < sDate) return { status: 'belum', label, isLocked: true, isOverdue: false };
-            if (today > eDate) return { status: 'lewat', label, isLocked: false, isOverdue: true };
-            return { status: 'aktif', label, isLocked: false, isOverdue: false };
+        window.updateNilai = async function(matkulId, itemId, value) {
+            const matkul = subjects.find(s => s.id === matkulId);
+            if (!matkul) return;
+            if (!matkul.nilai) matkul.nilai = {};
+            matkul.nilai[itemId] = value;
+            await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, matkulId), { nilai: matkul.nilai }, { merge: true });
+        }
+
+        window.saveDates = async function(semesterId) {
+            const newData = {};
+            sessions.forEach(s => {
+                newData[`start_${s.id}`] = document.getElementById(`date_start_${semesterId}_${s.id}`).value;
+                newData[`end_${s.id}`] = document.getElementById(`date_end_${semesterId}_${s.id}`).value;
+            });
+            await setDoc(doc(db, `artifacts/${appId}/users/${userId}/dates`, semesterId), newData);
+            showToast("Tanggal disimpan", "success");
+        }
+
+        function checkStatus(startDate, endDate, isCompleted) {
+            if (isCompleted) return { color: 'bg-emerald-50 border-emerald-200', text: 'Selesai', badge: 'bg-emerald-100 text-emerald-700', active: true };
+            if (!startDate || !endDate) return { color: 'bg-white border-slate-200', text: 'Set Tanggal', badge: 'bg-slate-100 text-slate-500', active: true };
+
+            const now = new Date();
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            end.setHours(23, 59, 59, 999); 
+
+            if (now < start) return { color: 'bg-slate-50 border-slate-200 opacity-60', text: 'Belum Buka', badge: 'bg-slate-200 text-slate-500', active: false };
+            if (now > end) return { color: 'bg-rose-50 border-rose-200', text: 'Terlewat', badge: 'bg-rose-100 text-rose-700', active: true };
+            
+            return { color: 'bg-blue-50 border-blue-200 shadow-sm', text: 'Aktif', badge: 'bg-blue-100 text-blue-700', active: true };
+        }
+
+        function formatDateShort(dateString) {
+            if(!dateString) return '-';
+            const d = new Date(dateString);
+            return `${d.getDate()}/${d.getMonth()+1}`;
         }
 
         function renderDashboard() {
             const container = document.getElementById('dashboardContainer');
             container.innerHTML = '';
 
-            let totalMatkul = subjects.length;
-            let totalSelesai = 0;
-            let totalTugas = 0;
-
-            if (totalMatkul === 0) {
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-20 px-4 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-white">
-                        <div class="bg-indigo-50 p-6 rounded-full mb-6">
-                            <svg class="w-16 h-16 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                        </div>
-                        <h2 class="text-2xl font-bold text-slate-800 mb-2">Belum Ada Mata Kuliah</h2>
-                        <p class="text-slate-500 max-w-md mx-auto mb-8">Anda belum menambahkan mata kuliah untuk dilacak. Klik tombol di bawah untuk mulai mengatur jadwal Anda.</p>
-                        <button onclick="openModal()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-200 transition-transform hover:scale-105">
-                            + Tambah Matkul Pertama
-                        </button>
-                    </div>`;
+            if (subjects.length === 0) {
+                container.innerHTML = `<div class="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
+                    <div class="text-slate-400 mb-3"><svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg></div>
+                    <p class="text-slate-500 font-medium">Belum ada mata kuliah yang ditambahkan.</p>
+                </div>`;
                 updateStats(0,0,0);
                 return;
             }
 
-            // Grouping by semester
-            const grouped = subjects.reduce((acc, sub) => {
-                if (!acc[sub.semester]) acc[sub.semester] = [];
-                acc[sub.semester].push(sub);
-                return acc;
-            }, {});
+            // Kelompokkan matkul by Semester
+            const grouped = {};
+            subjects.forEach(s => {
+                if (!grouped[s.semester]) grouped[s.semester] = [];
+                grouped[s.semester].push(s);
+            });
 
-            const sortedSemesters = Object.keys(grouped).sort((a, b) => a.localeCompare(b));
+            // Urutkan Semester
+            const sortedSemesters = Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b));
+            let totalDone = 0; let totalTarget = 0;
 
-            sortedSemesters.forEach(semester => {
-                const dates = semesterDates[semester] || {};
-                const safeSemId = semester.replace(/\s+/g, '-').toLowerCase();
-
+            sortedSemesters.forEach(sem => {
+                const semDates = semesterDates[`sem_${sem}`] || {};
+                
+                // HTML Header Semester + Date Settings Dropdown
                 let html = `
                 <div class="mb-10">
-                    <!-- Header Semester Card -->
-                    <div class="bg-indigo-900 rounded-t-2xl p-5 sm:px-8 sm:py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-md relative overflow-hidden">
-                        <div class="absolute -right-10 -top-10 w-40 h-40 bg-white opacity-5 rounded-full blur-2xl"></div>
-                        <div class="relative z-10 flex items-center gap-3">
-                            <div class="bg-indigo-800 p-2.5 rounded-xl border border-indigo-700/50">
-                                <svg class="w-6 h-6 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            </div>
-                            <h2 class="text-xl font-bold text-white tracking-wide">${semester}</h2>
+                    <div class="flex items-center justify-between bg-indigo-900 text-white p-4 rounded-t-2xl shadow-md">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-indigo-700 px-3 py-1 rounded-lg font-bold">SMT ${sem}</span>
+                            <span class="font-medium text-indigo-100 text-sm hidden sm:block">${grouped[sem].length} Mata Kuliah</span>
                         </div>
-                        
-                        <button onclick="toggleDateSettings('${safeSemId}')" class="relative z-10 w-full sm:w-auto px-4 py-2.5 bg-indigo-800 hover:bg-indigo-700 text-indigo-100 rounded-xl font-semibold text-sm transition-colors border border-indigo-700/50 flex items-center justify-between gap-2 focus:outline-none">
-                            <span class="flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                Atur Tanggal Sesi
-                            </span>
-                            <svg id="icon-settings-${safeSemId}" class="w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <button onclick="toggleDateSettings('sem_${sem}')" class="flex items-center gap-2 text-sm bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <span class="hidden sm:inline">Setel Tanggal</span>
+                            <svg id="dateIcon-sem_${sem}" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                     </div>
 
-                    <!-- Date Settings Panel (Accordion) -->
-                    <div id="date-settings-${safeSemId}" class="collapse-content bg-white border-x border-b border-slate-200 rounded-b-2xl mb-6 shadow-sm">
-                        <div class="p-5 sm:p-6 bg-slate-50/50">
-                            <p class="text-xs font-bold text-slate-500 mb-4 uppercase tracking-wider">Setel Rentang Waktu Diskusi & Tugas</p>
-                            <!-- Scrollable wrapper for mobile -->
-                            <div class="flex overflow-x-auto pb-4 gap-4 snap-x hide-scrollbar -mx-5 px-5 sm:mx-0 sm:px-0">
-                `;
+                    <!-- Date Setup Panel (Hidden by default) -->
+                    <div id="datePanel-sem_${sem}" class="hidden bg-white border-x border-b border-slate-200 p-4 rounded-b-2xl mb-4 shadow-sm">
+                        <p class="text-sm text-slate-500 mb-4 font-medium"><span class="text-indigo-600 font-bold">INFO:</span> Tanggal yang diisi di sini berlaku untuk semua mata kuliah di Semester ${sem}.</p>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">`;
+                        
+                        sessions.forEach(ses => {
+                            const startVal = semDates[`start_${ses.id}`] || '';
+                            const endVal = semDates[`end_${ses.id}`] || '';
+                            html += `
+                            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                <div class="font-bold text-xs text-slate-700 mb-2">${ses.label}</div>
+                                <input type="date" id="date_start_sem_${sem}_${ses.id}" value="${startVal}" class="w-full text-xs p-1 mb-1 border rounded bg-white" title="Mulai">
+                                <input type="date" id="date_end_sem_${sem}_${ses.id}" value="${endVal}" class="w-full text-xs p-1 border rounded bg-white" title="Akhir">
+                            </div>`;
+                        });
 
-                // Render Date Inputs horizontally
-                SESSIONS.forEach(sesi => {
-                    const sDates = dates[sesi.id] || { start: '', end: '' };
-                    html += `
-                        <div class="min-w-[140px] bg-white rounded-xl p-3 border border-slate-200 shadow-sm snap-start shrink-0">
-                            <div class="text-xs font-bold text-indigo-700 mb-2 border-b border-slate-100 pb-2">${sesi.label}</div>
-                            <div class="flex flex-col gap-2">
-                                <input type="date" value="${sDates.start}" onchange="updateDate('${semester}', '${sesi.id}', 'start', this.value)" class="text-[11px] w-full px-2 py-1.5 rounded-lg bg-slate-50 text-slate-700 border border-slate-200 focus:ring-1 focus:ring-indigo-400 outline-none cursor-pointer">
-                                <input type="date" value="${sDates.end}" onchange="updateDate('${semester}', '${sesi.id}', 'end', this.value)" class="text-[11px] w-full px-2 py-1.5 rounded-lg bg-slate-50 text-slate-700 border border-slate-200 focus:ring-1 focus:ring-indigo-400 outline-none cursor-pointer">
-                            </div>
-                        </div>
-                    `;
-                });
-
-                html += `       </div>
+                html += `</div>
+                        <div class="mt-4 flex justify-end">
+                            <button onclick="saveDates('sem_${sem}')" class="bg-slate-800 text-white text-sm px-4 py-2 rounded-lg hover:bg-slate-700">Simpan Tanggal</button>
                         </div>
                     </div>
 
-                    <!-- Subject List -->
-                    <div class="space-y-4 sm:space-y-6 mt-6">
-                `;
+                    <div class="space-y-4 mt-4">`;
 
-                grouped[semester].forEach(sub => {
+                // Render Matkul Cards
+                grouped[sem].forEach(matkul => {
                     html += `
-                        <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-sm flex flex-col xl:flex-row overflow-hidden hover:shadow-md transition-shadow relative">
-                            
-                            <!-- Hapus Button (Absolute Top Right) -->
-                            <button onclick="hapusMatkul('${sub.id}')" class="absolute top-4 right-4 z-20 p-2 text-slate-300 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-all focus:outline-none bg-white/80 backdrop-blur" title="Hapus">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col md:flex-row">
+                        <!-- Matkul Info (Kiri) -->
+                        <div class="bg-slate-50/50 p-4 border-b md:border-b-0 md:border-r border-slate-200 w-full md:w-64 flex-shrink-0 relative group">
+                            <button onclick="deleteMatkul('${matkul.id}')" class="absolute top-3 right-3 text-slate-300 hover:text-rose-500 transition-colors bg-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100" title="Hapus">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                             </button>
-
-                            <!-- Left: Subject Info -->
-                            <div class="p-5 sm:p-6 xl:w-[320px] shrink-0 border-b xl:border-b-0 xl:border-r border-slate-100 bg-gradient-to-br from-slate-50 to-white relative overflow-hidden">
-                                <div class="flex items-center gap-2 mb-3 pr-8">
-                                    <span class="font-mono text-[11px] font-bold px-2.5 py-1 rounded-md bg-white text-slate-600 border border-slate-200 shadow-sm">${sub.kode}</span>
-                                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider ${sub.kategori === 'Wajib' ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'}">${sub.kategori}</span>
-                                </div>
-                                <h3 class="text-base sm:text-lg font-extrabold text-slate-900 mb-4 leading-snug">${sub.nama}</h3>
-                                
-                                <div class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm space-y-2">
-                                    <div class="flex items-center gap-2 text-xs text-slate-600">
-                                        <div class="w-6 h-6 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-400 shrink-0"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></div>
-                                        <span class="font-semibold truncate">${sub.dosen1}</span>
-                                    </div>
-                                    ${sub.dosen2 ? `
-                                    <div class="flex items-center gap-2 text-xs text-slate-500">
-                                        <div class="w-6 h-6 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 shrink-0"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg></div>
-                                        <span class="truncate">${sub.dosen2}</span>
-                                    </div>` : ''}
-                                </div>
-                            </div>
-
-                            <!-- Right: Sessions Grid/Scroll -->
-                            <div class="flex-1 p-4 sm:p-6 bg-white overflow-hidden">
-                                <!-- Scroll container for mobile, flex wrap or grid for desktop -->
-                                <div class="flex xl:grid xl:grid-cols-4 2xl:grid-cols-8 gap-4 overflow-x-auto snap-x hide-scrollbar pb-2 xl:pb-0">
-                    `;
-
-                    SESSIONS.forEach(sesi => {
-                        const sDates = dates[sesi.id] || { start: '', end: '' };
-                        const st = checkDateStatus(sDates.start, sDates.end);
-                        
-                        // Calculate Stats
-                        totalTugas++; 
-                        if (sub.progress[sesi.id]) totalSelesai++;
-                        if (sesi.hasTask) { totalTugas++; if (sub.progress[sesi.taskId]) totalSelesai++; }
-
-                        // Data Status Diskusi
-                        const disDone = sub.progress[sesi.id];
-                        const disVal = sub.nilai[sesi.id] || '';
-                        
-                        // Data Status Tugas (jika ada)
-                        const taskDone = sesi.hasTask ? sub.progress[sesi.taskId] : true;
-                        const taskVal = sesi.hasTask ? (sub.nilai[sesi.taskId] || '') : '';
-
-                        // Logic pewarnaan cerdas
-                        let cardStyle = '';
-                        let badgeHtml = '';
-                        const isAllDone = disDone && taskDone;
-                        const isFailed = st.isOverdue && !isAllDone;
-
-                        if (st.isLocked) {
-                            cardStyle = 'bg-slate-50/70 border-slate-200 opacity-70';
-                            badgeHtml = `<span class="bg-slate-200 text-slate-500 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">Terkunci</span>`;
-                        } else if (isFailed) {
-                            cardStyle = 'bg-rose-50/50 border-rose-300 ring-1 ring-rose-100';
-                            badgeHtml = `<span class="bg-rose-500 text-white shadow-sm shadow-rose-200 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse">Terlewat</span>`;
-                        } else if (isAllDone) {
-                            cardStyle = 'bg-emerald-50/40 border-emerald-200';
-                            badgeHtml = `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">Selesai</span>`;
-                        } else {
-                            // Active
-                            cardStyle = 'bg-white border-indigo-200 shadow-sm ring-1 ring-indigo-50/50 hover:border-indigo-400 hover:shadow-md transition-all';
-                            badgeHtml = `<span class="bg-indigo-100 text-indigo-700 border border-indigo-200 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">Aktif</span>`;
-                        }
-
-                        // Jika sesi memiliki tugas, lebarkan cardnya di layout flex
-                        const flexBasis = sesi.hasTask ? 'min-w-[220px] sm:min-w-[260px]' : 'min-w-[180px] sm:min-w-[200px]';
-                        const gridColSpan = sesi.hasTask ? 'xl:col-span-2 2xl:col-span-1' : 'xl:col-span-1';
-
-                        html += `
-                                    <div class="${flexBasis} ${gridColSpan} snap-center shrink-0 border rounded-2xl p-4 flex flex-col justify-between ${cardStyle} relative">
-                                        
-                                        <!-- Header Sesi & Badge -->
-                                        <div class="flex justify-between items-start mb-3">
-                                            <div>
-                                                <h4 class="font-bold text-sm text-slate-800">${sesi.label}</h4>
-                                                <p class="text-[10px] text-slate-500 font-medium mt-0.5 line-clamp-1">${st.label}</p>
-                                            </div>
-                                            ${badgeHtml}
-                                        </div>
-
-                                        <div class="space-y-3">
-                                            <!-- Interaksi Diskusi -->
-                                            <div class="flex items-center gap-3">
-                                                <input type="checkbox" class="premium-checkbox" ${disDone ? 'checked' : ''} ${st.isLocked ? 'disabled' : ''} onchange="updateProgress('${sub.id}', '${sesi.id}', this.checked)">
-                                                <div class="flex-1 flex items-center bg-white border border-slate-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all ${st.isLocked?'opacity-50':''}">
-                                                    <span class="pl-3 pr-2 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wide bg-slate-50 border-r border-slate-100">Nilai</span>
-                                                    <input type="number" placeholder="-" value="${disVal}" ${st.isLocked ? 'disabled' : ''} onblur="updateNilai('${sub.id}', '${sesi.id}', this.value)" class="w-full px-2 py-2 text-sm font-bold text-indigo-700 bg-transparent outline-none text-center placeholder-slate-300">
-                                                </div>
-                                            </div>
-
-                                            <!-- Interaksi Tugas (Jika Ada) -->
-                                            ${sesi.hasTask ? `
-                                            <div class="w-full h-px bg-slate-200/60 my-1"></div>
-                                            <div class="flex justify-between items-center mb-1">
-                                                <h4 class="font-bold text-sm text-indigo-700">${sesi.taskLabel}</h4>
-                                            </div>
-                                            <div class="flex items-center gap-3">
-                                                <input type="checkbox" class="premium-checkbox !border-indigo-300" ${taskDone ? 'checked' : ''} ${st.isLocked ? 'disabled' : ''} onchange="updateProgress('${sub.id}', '${sesi.taskId}', this.checked)">
-                                                <div class="flex-1 flex items-center bg-white border border-slate-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all ${st.isLocked?'opacity-50':''}">
-                                                    <span class="pl-3 pr-2 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wide bg-slate-50 border-r border-slate-100">Nilai</span>
-                                                    <input type="number" placeholder="-" value="${taskVal}" ${st.isLocked ? 'disabled' : ''} onblur="updateNilai('${sub.id}', '${sesi.taskId}', this.value)" class="w-full px-2 py-2 text-sm font-bold text-indigo-700 bg-transparent outline-none text-center placeholder-slate-300">
-                                                </div>
-                                            </div>
-                                            ` : ''}
-                                        </div>
-                                    </div>
-                        `;
-                    });
-
-                    html += `
+                            <span class="inline-block px-2 py-1 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded mb-2">${matkul.kategori}</span>
+                            <h3 class="font-bold text-slate-800 text-lg leading-tight mb-1">${matkul.code}</h3>
+                            <p class="text-sm font-medium text-slate-600 mb-3">${matkul.name}</p>
+                            <div class="text-xs text-slate-500 flex items-start gap-1">
+                                <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                <div>
+                                    <div class="truncate">${matkul.dosen1}</div>
+                                    ${matkul.dosen2 ? `<div class="truncate mt-0.5">${matkul.dosen2}</div>` : ''}
                                 </div>
                             </div>
                         </div>
-                    `;
+
+                        <!-- Sessions Scrollable (Kanan) -->
+                        <div class="p-4 flex gap-3 overflow-x-auto hide-scrollbar snap-x">`;
+                        
+                        sessions.forEach(ses => {
+                            const startDate = semDates[`start_${ses.id}`];
+                            const endDate = semDates[`end_${ses.id}`];
+                            
+                            // DISKUSI
+                            totalTarget++;
+                            const isDiskusiDone = matkul.tasks?.[ses.id] || false;
+                            if(isDiskusiDone) totalDone++;
+                            
+                            const statusDiskusi = checkStatus(startDate, endDate, isDiskusiDone);
+                            const nilaiDiskusi = matkul.nilai?.[ses.id] || '';
+
+                            html += `
+                            <div class="snap-start flex gap-2 flex-shrink-0">
+                                <!-- Kartu Diskusi -->
+                                <div class="w-36 rounded-xl border p-3 flex flex-col transition-all ${statusDiskusi.color}">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-xs font-bold text-slate-700">Diskusi ${ses.id.replace('s','')}</span>
+                                        <span class="text-[10px] px-1.5 py-0.5 rounded font-medium ${statusDiskusi.badge}">${statusDiskusi.text}</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-500 mb-3 bg-white/50 px-1.5 py-0.5 rounded text-center font-medium">
+                                        ${formatDateShort(startDate)} - ${formatDateShort(endDate)}
+                                    </div>
+                                    <div class="mt-auto space-y-2">
+                                        <label class="flex items-center gap-2 cursor-pointer group">
+                                            <input type="checkbox" ${isDiskusiDone ? 'checked' : ''} ${!statusDiskusi.active ? 'disabled' : ''} 
+                                                onchange="toggleTask('${matkul.id}', '${ses.id}', this.checked)"
+                                                class="w-4 h-4 rounded border-slate-300 text-emerald-500 focus:ring-emerald-500 cursor-pointer disabled:opacity-50">
+                                            <span class="text-xs font-medium ${isDiskusiDone ? 'line-through text-slate-400' : 'text-slate-700'} group-hover:text-emerald-600">Selesai</span>
+                                        </label>
+                                        <input type="number" placeholder="Nilai" value="${nilaiDiskusi}" ${!statusDiskusi.active ? 'disabled' : ''}
+                                            onchange="updateNilai('${matkul.id}', '${ses.id}', this.value)"
+                                            class="w-full text-xs p-1.5 rounded bg-white border border-slate-200 outline-none focus:border-indigo-400 disabled:opacity-50 font-bold text-indigo-700 text-center hide-scrollbar" style="-moz-appearance: textfield;">
+                                    </div>
+                                </div>`;
+
+                            // TUGAS (Jika ada di sesi ini)
+                            if (ses.hasTask) {
+                                totalTarget++;
+                                const isTugasDone = matkul.tasks?.[ses.taskId] || false;
+                                if(isTugasDone) totalDone++;
+                                const statusTugas = checkStatus(startDate, endDate, isTugasDone);
+                                const nilaiTugas = matkul.nilai?.[ses.taskId] || '';
+
+                                html += `
+                                <!-- Kartu Tugas -->
+                                <div class="w-36 rounded-xl border p-3 flex flex-col transition-all border-l-4 border-l-indigo-400 ${statusTugas.color}">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-xs font-bold text-indigo-800">${ses.taskLabel}</span>
+                                        <span class="text-[10px] px-1.5 py-0.5 rounded font-medium ${statusTugas.badge}">${statusTugas.text}</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-500 mb-3 bg-white/50 px-1.5 py-0.5 rounded text-center font-medium">
+                                        Sama dgn Sesi ${ses.id.replace('s','')}
+                                    </div>
+                                    <div class="mt-auto space-y-2">
+                                        <label class="flex items-center gap-2 cursor-pointer group">
+                                            <input type="checkbox" ${isTugasDone ? 'checked' : ''} ${!statusTugas.active ? 'disabled' : ''} 
+                                                onchange="toggleTask('${matkul.id}', '${ses.taskId}', this.checked)"
+                                                class="w-4 h-4 rounded border-slate-300 text-emerald-500 focus:ring-emerald-500 cursor-pointer disabled:opacity-50">
+                                            <span class="text-xs font-medium ${isTugasDone ? 'line-through text-slate-400' : 'text-slate-700'} group-hover:text-emerald-600">Selesai</span>
+                                        </label>
+                                        <input type="number" placeholder="Nilai Tugas" value="${nilaiTugas}" ${!statusTugas.active ? 'disabled' : ''}
+                                            onchange="updateNilai('${matkul.id}', '${ses.taskId}', this.value)"
+                                            class="w-full text-xs p-1.5 rounded bg-white border border-slate-200 outline-none focus:border-indigo-400 disabled:opacity-50 font-bold text-indigo-700 text-center hide-scrollbar" style="-moz-appearance: textfield;">
+                                    </div>
+                                </div>`;
+                            }
+
+                            html += `</div>`; // End of snap-start group
+                        });
+
+                html += `</div>
+                    </div>`; // End Matkul Card
                 });
 
-                html += `
-                    </div>
-                </div>`;
-                
-                container.insertAdjacentHTML('beforeend', html);
+                html += `</div></div>`; // End Semester Group
+                container.innerHTML += html;
             });
 
-            updateStats(totalMatkul, totalSelesai, totalTugas - totalSelesai);
+            updateStats(subjects.length, totalDone, totalTarget - totalDone);
         }
 
-        function updateStats(matkul, selesai, menunggu) {
-            document.getElementById('statTotalMatkul').textContent = matkul;
-            document.getElementById('statSelesai').textContent = selesai;
-            document.getElementById('statMenunggu').textContent = menunggu;
+        function updateStats(matkul, done, left) {
+            document.getElementById('statMatkul').textContent = matkul;
+            document.getElementById('statDone').textContent = done;
+            document.getElementById('statLeft').textContent = left;
         }
 
-        function showToast(message, type = "success") {
+        function showToast(msg, type="info") {
             const toast = document.getElementById('toast');
-            const icon = document.getElementById('toastIcon');
-            const msg = document.getElementById('toastMessage');
-
-            msg.textContent = message;
+            const msgEl = document.getElementById('toastMessage');
+            const iconEl = document.getElementById('toastIcon');
             
-            if (type === "success") {
-                toast.className = "fixed bottom-4 sm:bottom-6 right-4 sm:right-6 transform transition-all duration-300 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 p-4 flex items-center z-[70] max-w-sm translate-y-0 opacity-100 border-l-4 border-l-emerald-500 pointer-events-auto";
-                icon.innerHTML = `<div class="bg-emerald-100 p-1.5 rounded-full"><svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div>`;
+            msgEl.textContent = msg;
+            if(type === 'success') {
+                iconEl.innerHTML = `<div class="bg-emerald-100 text-emerald-600 p-1.5 rounded-full"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div>`;
             } else {
-                toast.className = "fixed bottom-4 sm:bottom-6 right-4 sm:right-6 transform transition-all duration-300 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 p-4 flex items-center z-[70] max-w-sm translate-y-0 opacity-100 border-l-4 border-l-rose-500 pointer-events-auto";
-                icon.innerHTML = `<div class="bg-rose-100 p-1.5 rounded-full"><svg class="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></div>`;
+                iconEl.innerHTML = `<div class="bg-rose-100 text-rose-600 p-1.5 rounded-full"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>`;
             }
-
-            setTimeout(() => {
-                toast.classList.add('translate-y-24', 'opacity-0');
-                toast.classList.remove('translate-y-0', 'opacity-100');
-            }, 3500);
+            
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3000);
         }
 
-        window.onload = init;
+        // Jalankan Inisialisasi
+        init();
     </script>
 </body>
 </html>
