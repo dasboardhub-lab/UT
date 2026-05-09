@@ -18,7 +18,7 @@
 <body class="bg-slate-50 text-slate-800 min-h-screen">
 
     <!-- ==================== SCREEN: LOGIN ==================== -->
-    <div id="loginScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-100 p-4 smooth-transition">
+    <div id="loginScreen" class="hidden opacity-0 fixed inset-0 z-50 flex items-center justify-center bg-slate-100 p-4 smooth-transition">
         <div class="bg-white w-full max-w-md rounded-[2rem] shadow-2xl shadow-indigo-100/50 p-8 modal-animate">
             <div class="text-center mb-8">
                 <div class="bg-indigo-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-200">
@@ -270,17 +270,18 @@
 
         // --- Core Initialization ---
         async function init() {
-            // Cek sesi lokal secara instan untuk mencegah kedipan layar login
+            // Render UI instan dari memori lokal (Tanpa jeda tunggu server)
             const savedRole = localStorage.getItem('ut_role');
             if (savedRole) {
-                document.getElementById('loginScreen').classList.add('hidden');
+                checkLocalSession(true); // true = tampilkan instan tanpa animasi/kedipan
+            } else {
+                showScreen('login', true);
             }
 
+            // Koneksi database berjalan di latar belakang secara diam-diam
             onAuthStateChanged(auth, async (user) => {
                 if (!user) {
                     try { await signInAnonymously(auth); } catch (e) { showToast("Gagal koneksi server", "error"); }
-                } else {
-                    checkLocalSession();
                 }
             });
 
@@ -291,46 +292,57 @@
         }
 
         // --- Routing / Navigation ---
-        function checkLocalSession() {
+        function checkLocalSession(instant = false) {
             const savedRole = localStorage.getItem('ut_role');
-            const savedId = localStorage.getItem('ut_id');
+            let savedId = localStorage.getItem('ut_id');
 
             if (savedRole === 'admin') {
-                showScreen('admin');
+                showScreen('admin', instant);
                 setupAdminListeners();
             } else if (savedRole === 'student' && savedId) {
+                savedId = savedId.toUpperCase();
+                localStorage.setItem('ut_id', savedId);
+
                 userRole = 'student';
                 userId = savedId;
                 document.getElementById('displayUserId').textContent = userId;
-                showScreen('student');
+                showScreen('student', instant);
                 setupStudentListeners();
             } else {
-                showScreen('login');
+                showScreen('login', instant);
             }
         }
 
-        function showScreen(screen) {
+        function showScreen(screen, instant = false) {
             document.getElementById('loginScreen').classList.add('hidden', 'opacity-0');
             document.getElementById('adminScreen').classList.add('hidden');
             document.getElementById('mainApp').classList.add('hidden');
 
-            setTimeout(() => {
+            const executeShow = () => {
                 if (screen === 'login') {
                     document.getElementById('loginScreen').classList.remove('hidden');
-                    setTimeout(() => document.getElementById('loginScreen').classList.remove('opacity-0'), 50);
+                    if (instant) document.getElementById('loginScreen').classList.remove('opacity-0');
+                    else setTimeout(() => document.getElementById('loginScreen').classList.remove('opacity-0'), 50);
                 } else if (screen === 'admin') {
                     document.getElementById('adminScreen').classList.remove('hidden');
                 } else if (screen === 'student') {
                     document.getElementById('mainApp').classList.remove('hidden');
                 }
-            }, 100); // slight delay for smooth transition
+            };
+
+            if (instant) {
+                executeShow();
+            } else {
+                setTimeout(executeShow, 100); // Animasi transisi hanya jalan jika bukan muat ulang (refresh)
+            }
         }
 
         // --- Login Logic ---
         async function handleLoginSubmit(e) {
             e.preventDefault();
-            const id = document.getElementById('loginId').value.trim();
+            const rawId = document.getElementById('loginId').value.trim();
             const pass = document.getElementById('loginPass').value;
+            const id = rawId.toUpperCase(); // PAKSA MENJADI HURUF BESAR
 
             // Check Admin Credentials
             if (id === 'admin') {
@@ -425,8 +437,9 @@
 
         async function handleAdminAddUser(e) {
             e.preventDefault();
-            const newId = document.getElementById('newUserId').value.trim();
+            const rawNewId = document.getElementById('newUserId').value.trim();
             const newPass = document.getElementById('newUserPass').value.trim();
+            const newId = rawNewId.toUpperCase(); // PAKSA MENJADI HURUF BESAR
 
             if (!newId || !newPass) return;
             try {
@@ -528,18 +541,25 @@
         }
 
         window.toggleTask = async function(matkulId, taskId, isChecked) {
-            const matkul = subjects.find(s => s.id === matkulId);
-            if (!matkul) return;
-            matkul.tasks[taskId] = isChecked;
-            await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, matkulId), { tasks: matkul.tasks }, { merge: true });
+            try {
+                // PERBAIKAN 2: Update Data secara Atomik (Sistem hanya mengirim ceklis yang diklik saja agar tidak menimpa data dari perangkat lain)
+                await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, matkulId), { 
+                    tasks: { [taskId]: isChecked } 
+                }, { merge: true });
+            } catch (err) {
+                showToast("Gagal menyinkronkan tugas", "error");
+            }
         }
 
         window.updateNilai = async function(matkulId, itemId, value) {
-            const matkul = subjects.find(s => s.id === matkulId);
-            if (!matkul) return;
-            if (!matkul.nilai) matkul.nilai = {};
-            matkul.nilai[itemId] = value;
-            await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, matkulId), { nilai: matkul.nilai }, { merge: true });
+            try {
+                // PERBAIKAN 3: Update Nilai secara Atomik
+                await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, matkulId), { 
+                    nilai: { [itemId]: value } 
+                }, { merge: true });
+            } catch (err) {
+                showToast("Gagal menyinkronkan nilai", "error");
+            }
         }
 
         window.toggleDateSettings = function(semesterId) {
@@ -551,6 +571,18 @@
             } else {
                 panel.classList.add('hidden');
                 icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        window.toggleSemester = function(sem) {
+            const content = document.getElementById(`semesterContent-${sem}`);
+            const icon = document.getElementById(`semesterIcon-${sem}`);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(0deg)'; // Panah menghadap ke bawah (Terbuka)
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(-90deg)'; // Panah menghadap ke kanan (Tertutup)
             }
         }
 
@@ -595,7 +627,6 @@
                     <h3 class="text-xl font-bold text-slate-700 mb-1">Mata Kuliah Kosong</h3>
                     <p class="text-slate-500 text-sm">Tambahkan mata kuliah pertama Anda di sudut kanan atas.</p>
                 </div>`;
-                updateStats(0,0,0);
                 return;
             }
 
@@ -606,16 +637,18 @@
             });
 
             const sortedSemesters = Object.keys(grouped).sort((a, b) => parseInt(a) - parseInt(b));
-            let totalDone = 0; let totalTarget = 0;
 
             sortedSemesters.forEach(sem => {
                 const semDates = semesterDates[`sem_${sem}`] || {};
-                
+            
                 let html = `
                 <div class="mb-12">
                     <div class="flex items-center justify-between mb-4 px-2">
-                        <div class="flex items-center gap-3">
-                            <span class="bg-slate-900 text-white px-4 py-1.5 rounded-xl font-extrabold text-sm shadow-md">Semester ${sem}</span>
+                        <div class="flex items-center gap-3 cursor-pointer group" onclick="toggleSemester('${sem}')" title="Ciutkan/Tampilkan Semester">
+                            <div class="bg-slate-900 group-hover:bg-indigo-600 transition-colors text-white px-4 py-1.5 rounded-xl font-extrabold text-sm shadow-md flex items-center gap-2">
+                                <span>Semester ${sem}</span>
+                                <svg id="semesterIcon-${sem}" class="w-4 h-4 transition-transform transform rotate-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
                             <span class="font-bold text-slate-400 text-sm">${grouped[sem].length} Mata Kuliah</span>
                         </div>
                         <button onclick="toggleDateSettings('sem_${sem}')" class="flex items-center gap-2 text-sm text-indigo-600 font-bold bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-xl transition-colors">
@@ -625,148 +658,116 @@
                         </button>
                     </div>
 
-                    <!-- Dropdown Tanggal -->
-                    <div id="datePanel-sem_${sem}" class="hidden bg-white border border-slate-200 p-5 rounded-3xl mb-6 shadow-sm">
-                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">`;
+                    <div id="semesterContent-${sem}" class="block transition-all duration-300">
+                        <div id="datePanel-sem_${sem}" class="hidden bg-white border border-slate-200 p-5 rounded-3xl mb-6 shadow-sm">
+                            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">`;
                         
                         sessions.forEach(ses => {
-                            const startVal = semDates[`start_${ses.id}`] || '';
-                            const endVal = semDates[`end_${ses.id}`] || '';
-                            html += `
-                            <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                                <div class="font-extrabold text-[10px] text-slate-500 uppercase mb-2">${ses.label}</div>
-                                <input type="date" id="date_start_sem_${sem}_${ses.id}" value="${startVal}" class="w-full text-[10px] p-1.5 mb-1.5 border border-slate-200 rounded-lg bg-white outline-none focus:border-indigo-400 text-slate-600 font-medium" title="Tgl Mulai">
-                                <input type="date" id="date_end_sem_${sem}_${ses.id}" value="${endVal}" class="w-full text-[10px] p-1.5 border border-slate-200 rounded-lg bg-white outline-none focus:border-indigo-400 text-slate-600 font-medium" title="Tgl Akhir">
-                            </div>`;
-                        });
+                                const startVal = semDates[`start_${ses.id}`] || '';
+                                const endVal = semDates[`end_${ses.id}`] || '';
+                                html += `
+                                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                                    <div class="font-extrabold text-[10px] text-slate-500 uppercase mb-2">${ses.label}</div>
+                                    <input type="date" id="date_start_sem_${sem}_${ses.id}" value="${startVal}" class="w-full text-[10px] p-1.5 mb-1.5 border border-slate-200 rounded-lg bg-white outline-none focus:border-indigo-400 text-slate-600 font-medium" title="Tgl Mulai">
+                                    <input type="date" id="date_end_sem_${sem}_${ses.id}" value="${endVal}" class="w-full text-[10px] p-1.5 border border-slate-200 rounded-lg bg-white outline-none focus:border-indigo-400 text-slate-600 font-medium" title="Tgl Akhir">
+                                </div>`;
+                            });
 
-                html += `</div>
-                        <div class="mt-4 flex justify-end">
-                            <button onclick="saveDates('sem_${sem}')" class="bg-slate-900 text-white text-sm font-bold px-6 py-2.5 rounded-xl hover:bg-indigo-600 shadow-md transition-colors">Simpan Tanggal</button>
+                    html += `</div>
+                            <div class="mt-4 flex justify-end">
+                                <button onclick="saveDates('sem_${sem}')" class="bg-slate-900 text-white text-sm font-bold px-6 py-2.5 rounded-xl hover:bg-indigo-600 shadow-md transition-colors">Simpan Tanggal</button>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Compact Table Layout -->
-                    <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden overflow-x-auto hide-scrollbar">
-                        <table class="w-full text-left border-collapse min-w-[1000px]">
-                            <thead>
-                                <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
-                                    <th class="p-4 w-64 sticky left-0 bg-slate-50 z-20 border-r border-slate-200">Mata Kuliah</th>`;
-                                    
-                                sessions.forEach(ses => {
-                                    html += `<th class="p-4 text-center min-w-[100px] border-r border-slate-200 last:border-0">${ses.label}</th>`;
-                                });
+                        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden overflow-x-auto hide-scrollbar">
+                            <table class="w-full text-left border-collapse min-w-[1000px]">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
+                                        <th class="p-4 w-64 sticky left-0 bg-slate-50 z-20 border-r border-slate-200">Mata Kuliah</th>`;
+                                        
+                                    sessions.forEach(ses => {
+                                        html += `<th class="p-4 text-center min-w-[100px] border-r border-slate-200 last:border-0">${ses.label}</th>`;
+                                    });
 
-                            html += `
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">`;
+                                html += `
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">`;
 
-                grouped[sem].forEach(matkul => {
-                    html += `
-                                <tr class="group hover:bg-slate-50/50 transition-colors">
-                                    
-                                    <!-- Kolom Identitas Matkul (Sticky) -->
+                    grouped[sem].forEach(matkul => {
+                        html += `<tr class="group hover:bg-slate-50/50 transition-colors">
                                     <td class="p-4 sticky left-0 bg-white group-hover:bg-slate-50 transition-colors z-10 border-r border-slate-100 align-top">
                                         <div class="relative">
                                             <button onclick="deleteMatkul('${matkul.id}')" class="absolute -top-2 -right-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-all bg-white rounded-md p-1 shadow-sm opacity-0 group-hover:opacity-100" title="Hapus Matkul">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                             </button>
-                                            
                                             <span class="inline-block px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[9px] font-extrabold uppercase tracking-wide rounded-md mb-1.5">${matkul.kategori}</span>
                                             <h3 class="font-extrabold text-slate-800 text-sm leading-tight">${matkul.code}</h3>
                                             <p class="text-[11px] font-medium text-slate-500 mt-0.5 leading-snug line-clamp-2" title="${matkul.name}">${matkul.name}</p>
-                                            
                                             <div class="mt-2 text-[10px] text-slate-400 font-medium">
                                                 <div class="truncate w-48">${matkul.dosen1}</div>
                                                 ${matkul.dosen2 ? `<div class="truncate w-48">${matkul.dosen2}</div>` : ''}
                                             </div>
                                         </div>
                                     </td>`;
-                                    
-                                    // Kolom Sesi
-                                    sessions.forEach(ses => {
-                                        const startDate = semDates[`start_${ses.id}`];
-                                        const endDate = semDates[`end_${ses.id}`];
+
+                        sessions.forEach(ses => {
+                            const start = semDates[`start_${ses.id}`];
+                            const end = semDates[`end_${ses.id}`];
+                            
+                            const isDiskusiDone = matkul.tasks && matkul.tasks[`diskusi_${ses.id}`] ? true : false;
+                            const diskusiStatus = checkStatus(start, end, isDiskusiDone);
+                            
+                            const isTaskDone = matkul.tasks && matkul.tasks[`tugas_${ses.id}`] ? true : false;
+                            const taskStatus = checkStatus(start, end, isTaskDone);
+
+                            html += `<td class="p-2 border-r border-slate-100 last:border-0 align-top">
+                                <div class="flex flex-col gap-2">
+                                    <!-- Diskusi Card -->
+                                    <div class="relative rounded-xl p-2 border ${diskusiStatus.border} ${diskusiStatus.bg} transition-colors">
+                                        <div class="absolute top-1 right-1 w-2 h-2 rounded-full ${isDiskusiDone ? 'bg-emerald-500' : (!diskusiStatus.active && diskusiStatus.text === 'Terlewat' ? 'bg-rose-500 animate-pulse' : (diskusiStatus.active ? 'bg-indigo-400' : 'bg-slate-300'))}" title="${diskusiStatus.text}"></div>
                                         
-                                        totalTarget++;
-                                        const isDiskusiDone = matkul.tasks?.[ses.id] || false;
-                                        if(isDiskusiDone) totalDone++;
-                                        const nilaiDiskusi = matkul.nilai?.[ses.id] || '';
-
-                                        let isTugasDone = false;
-                                        let nilaiTugas = '';
-                                        if (ses.hasTask) {
-                                            totalTarget++;
-                                            isTugasDone = matkul.tasks?.[ses.taskId] || false;
-                                            if(isTugasDone) totalDone++;
-                                            nilaiTugas = matkul.nilai?.[ses.taskId] || '';
-                                        }
-
-                                        const isCompleted = ses.hasTask ? (isDiskusiDone && isTugasDone) : isDiskusiDone;
-                                        const status = checkStatus(startDate, endDate, isCompleted);
-
-                                        // Warna background sel tabel berdasarkan status
-                                        let tdBgClass = 'bg-white';
-                                        if (!status.active && status.text === 'Belum Buka') tdBgClass = 'bg-slate-50/50';
-                                        if (isCompleted) tdBgClass = 'bg-emerald-50/20';
-
-                                        html += `
-                                    <td class="p-3 align-top border-r border-slate-100 last:border-0 ${tdBgClass}">
-                                        
-                                        <div class="flex flex-col gap-2 h-full justify-start">
-                                            <!-- Status / Tanggal Info -->
-                                            <div class="flex justify-between items-center mb-1">
-                                                <span class="text-[9px] text-slate-400 font-medium">${formatDateShort(startDate)}-${formatDateShort(endDate)}</span>
-                                                <span class="w-2 h-2 rounded-full ${status.text === 'Selesai' ? 'bg-emerald-400' : (status.text === 'Terlewat' ? 'bg-rose-400 animate-pulse' : (status.active ? 'bg-indigo-400' : 'bg-slate-300'))}" title="${status.text}"></span>
+                                        <label class="flex items-center gap-2 cursor-pointer mb-2">
+                                            <div class="relative flex items-center">
+                                                <input type="checkbox" ${isDiskusiDone ? 'checked' : ''} ${!diskusiStatus.active && diskusiStatus.text === 'Belum Buka' ? 'disabled' : ''} onchange="toggleTask('${matkul.id}', 'diskusi_${ses.id}', this.checked)" class="peer w-4 h-4 rounded appearance-none border border-slate-300 checked:bg-emerald-500 checked:border-emerald-500 transition-colors disabled:opacity-50 cursor-pointer">
+                                                <svg class="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 top-0.5 left-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                                             </div>
+                                            <span class="text-[10px] font-bold text-slate-700 ${isDiskusiDone ? 'line-through opacity-60' : ''}">Diskusi</span>
+                                        </label>
+                                        <input type="number" placeholder="Nilai" value="${matkul.nilai && matkul.nilai[`nilai_d_${ses.id}`] ? matkul.nilai[`nilai_d_${ses.id}`] : ''}" onchange="updateNilai('${matkul.id}', 'nilai_d_${ses.id}', this.value)" ${!diskusiStatus.active && diskusiStatus.text === 'Belum Buka' ? 'disabled' : ''} class="w-full bg-white border border-slate-200 rounded-md text-[10px] px-2 py-1 text-center font-bold text-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none hide-scrollbar disabled:opacity-50 disabled:bg-slate-100">
+                                    </div>`;
 
-                                            <!-- Checkbox & Nilai Diskusi -->
-                                            <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg p-1.5 shadow-sm">
-                                                <input type="checkbox" ${isDiskusiDone ? 'checked' : ''} ${!status.active ? 'disabled' : ''} 
-                                                    onchange="toggleTask('${matkul.id}', '${ses.id}', this.checked)"
-                                                    class="w-3.5 h-3.5 rounded-sm border-slate-300 text-emerald-500 focus:ring-emerald-500 cursor-pointer disabled:opacity-40 transition-colors flex-shrink-0" title="Diskusi Selesai">
-                                                <input type="text" placeholder="Nilai Dsk." value="${nilaiDiskusi}" ${!status.active ? 'disabled' : ''}
-                                                    onchange="updateNilai('${matkul.id}', '${ses.id}', this.value)"
-                                                    class="w-full text-[10px] font-bold text-slate-700 bg-transparent outline-none placeholder-slate-300 disabled:opacity-50 text-center" title="Nilai Diskusi">
-                                            </div>`;
+                            if (ses.hasTask) {
+                                html += `
+                                    <!-- Tugas Card -->
+                                    <div class="relative rounded-xl p-2 border ${taskStatus.border} ${taskStatus.bg} bg-indigo-50/30 transition-colors">
+                                        <div class="absolute top-1 right-1 w-2 h-2 rounded-full ${isTaskDone ? 'bg-emerald-500' : (!taskStatus.active && taskStatus.text === 'Terlewat' ? 'bg-rose-500 animate-pulse' : (taskStatus.active ? 'bg-indigo-400' : 'bg-slate-300'))}" title="${taskStatus.text}"></div>
+                                        
+                                        <label class="flex items-center gap-2 cursor-pointer mb-2">
+                                            <div class="relative flex items-center">
+                                                <input type="checkbox" ${isTaskDone ? 'checked' : ''} ${!taskStatus.active && taskStatus.text === 'Belum Buka' ? 'disabled' : ''} onchange="toggleTask('${matkul.id}', 'tugas_${ses.id}', this.checked)" class="peer w-4 h-4 rounded appearance-none border border-slate-300 checked:bg-emerald-500 checked:border-emerald-500 transition-colors disabled:opacity-50 cursor-pointer">
+                                                <svg class="absolute w-3 h-3 text-white pointer-events-none opacity-0 peer-checked:opacity-100 top-0.5 left-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                            </div>
+                                            <span class="text-[10px] font-bold text-slate-700 ${isTaskDone ? 'line-through opacity-60' : ''}">${ses.taskLabel}</span>
+                                        </label>
+                                        <input type="number" placeholder="Nilai" value="${matkul.nilai && matkul.nilai[`nilai_t_${ses.id}`] ? matkul.nilai[`nilai_t_${ses.id}`] : ''}" onchange="updateNilai('${matkul.id}', 'nilai_t_${ses.id}', this.value)" ${!taskStatus.active && taskStatus.text === 'Belum Buka' ? 'disabled' : ''} class="w-full bg-white border border-slate-200 rounded-md text-[10px] px-2 py-1 text-center font-bold text-indigo-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none hide-scrollbar disabled:opacity-50 disabled:bg-slate-100">
+                                    </div>`;
+                            }
 
-                                        // Checkbox & Nilai Tugas (Jika ada)
-                                        if (ses.hasTask) {
-                                            html += `
-                                            <!-- Checkbox & Nilai Tugas -->
-                                            <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-100 rounded-lg p-1.5 shadow-sm mt-1">
-                                                <input type="checkbox" ${isTugasDone ? 'checked' : ''} ${!status.active ? 'disabled' : ''} 
-                                                    onchange="toggleTask('${matkul.id}', '${ses.taskId}', this.checked)"
-                                                    class="w-3.5 h-3.5 rounded-sm border-indigo-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer disabled:opacity-40 transition-colors flex-shrink-0" title="Tugas Selesai">
-                                                <input type="text" placeholder="Nilai Tgs." value="${nilaiTugas}" ${!status.active ? 'disabled' : ''}
-                                                    onchange="updateNilai('${matkul.id}', '${ses.taskId}', this.value)"
-                                                    class="w-full text-[10px] font-bold text-indigo-700 bg-transparent outline-none placeholder-indigo-300 disabled:opacity-50 text-center" title="Nilai Tugas">
-                                            </div>`;
-                                        }
+                            html += `</div></td>`;
+                        });
 
-                                        html += `
-                                        </div>
-                                    </td>`;
-                                    });
+                        html += `</tr>`;
+                    });
 
                     html += `
-                                </tr>`;
-                });
-
-                html += `
-                            </tbody>
-                        </table>
-                    </div>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div> <!-- End of Wrapper Konten Semester -->
                 </div>`; 
                 container.innerHTML += html;
             });
-
-            // updateStats dihapus karena KPI card sudah tidak ada
-        }
-
-        function updateStats(matkul, done, left) {
-            // Fungsi ini dikosongkan karena elemennya sudah dihapus
         }
 
         function showToast(msg, type="info") {
