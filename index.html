@@ -7,183 +7,218 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Input Number Spinner Hider */
-        input[type="number"]::-webkit-inner-spin-button, 
-        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type="number"] { -moz-appearance: textfield; }
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .modal-animate { animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .smooth-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
         
-        /* Modern UI Utilities */
-        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-        .glass-dark { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); }
-        
-        /* Background Mesh Gradient Orbs */
-        .bg-orb-1 { position: fixed; top: -10%; left: -10%; width: 50vw; height: 50vw; border-radius: 50%; background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(255,255,255,0) 70%); z-index: -1; }
-        .bg-orb-2 { position: fixed; bottom: -10%; right: -10%; width: 60vw; height: 60vw; border-radius: 50%; background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, rgba(255,255,255,0) 70%); z-index: -1; }
-
-        /* Animations */
-        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95) translateY(15px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        .modal-animate { animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        
-        /* Glowing effects for active states */
-        .glow-active { box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); border-color: rgba(59, 130, 246, 0.6); }
-        .glow-danger { box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); border-color: rgba(239, 68, 68, 0.6); }
-        
-        /* Custom Checkbox (Cyber Style) */
+        /* Modern Checkbox */
         .cyber-checkbox {
-            appearance: none; width: 1.25rem; height: 1.25rem; border: 2px solid #cbd5e1; border-radius: 0.375rem;
-            outline: none; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); position: relative;
+            appearance: none; width: 16px; height: 16px; border: 2px solid #cbd5e1; border-radius: 4px;
+            position: relative; cursor: pointer; transition: all 0.2s ease; background-color: white;
         }
-        .cyber-checkbox:checked { border-color: #10b981; background-color: #10b981; }
+        .cyber-checkbox:checked { background-color: #10b981; border-color: #10b981; }
         .cyber-checkbox:checked::after {
-            content: ''; position: absolute; top: 2px; left: 6px; width: 5px; height: 10px;
+            content: ''; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px;
             border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg);
         }
-        .cyber-checkbox:disabled { cursor: not-allowed; opacity: 0.5; }
+        .cyber-checkbox:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Premium Glowing Effects */
+        .glow-active { box-shadow: 0 0 15px rgba(99, 102, 241, 0.3), inset 0 0 10px rgba(99, 102, 241, 0.1); border-color: #818cf8 !important; }
+
+        /* Progress Bar Animation */
+        .progress-bar-fill { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Fancy Login BG & Animations */
+        .login-bg {
+            background-color: #0f172a;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .login-glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
     </style>
 </head>
-<body class="text-slate-800 antialiased selection:bg-indigo-500 selection:text-white">
-
-    <!-- Background Decoration -->
-    <div class="bg-orb-1"></div>
-    <div class="bg-orb-2"></div>
+<body class="text-slate-800 min-h-screen relative overflow-x-hidden">
+    
+    <!-- Background Elements -->
+    <div class="fixed inset-0 z-[-1] bg-slate-50"></div>
 
     <!-- ==================== SCREEN: LOGIN ==================== -->
-    <div id="loginScreen" class="hidden opacity-0 fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-500">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
-        <div class="bg-white w-full max-w-md rounded-[24px] shadow-2xl relative z-10 modal-animate border border-slate-100 overflow-hidden">
-            <div class="bg-slate-900 p-8 text-center relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500"></div>
-                <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-5 backdrop-blur-md border border-white/20">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/></svg>
+    <div id="loginScreen" class="hidden opacity-0 fixed inset-0 z-50 flex items-center justify-center p-4 smooth-transition login-bg">
+        
+        <!-- Decorative Background Orbs -->
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-float"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-float" style="animation-delay: 2s;"></div>
+
+        <div class="login-glass w-full max-w-md rounded-[2.5rem] p-8 modal-animate relative overflow-hidden z-10">
+            <div class="text-center relative z-10 mb-8">
+                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-[0_0_20px_rgba(99,102,241,0.4)] transform hover:scale-105 transition-transform duration-300">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v7.5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 21.5l4-2.222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </div>
-                <h1 class="text-2xl font-extrabold text-white tracking-tight">Monitoring Tugas UT</h1>
-                <p class="text-sm text-slate-400 mt-1.5 font-medium">Pro Edition Workspace</p>
+                <h1 class="text-3xl font-extrabold text-white tracking-tight">Monitoring UT</h1>
+                <p class="text-sm text-slate-400 mt-2 font-medium">Masuk untuk mengelola progres akademik Anda</p>
             </div>
 
-            <form id="loginForm" class="p-8 space-y-5">
+            <form id="loginForm" class="space-y-5 relative z-10">
                 <div>
-                    <label class="block text-xs font-extrabold text-slate-500 mb-2 uppercase tracking-wider">Access ID</label>
-                    <input type="text" id="loginId" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-bold text-slate-800" placeholder="Masukkan ID Pengguna">
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5 ml-1 tracking-wide uppercase">ID Pengguna</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-slate-400 group-focus-within:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        </div>
+                        <input type="text" id="loginId" required class="w-full pl-11 pr-4 py-3.5 bg-slate-800/50 border border-slate-600 rounded-2xl text-sm text-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 outline-none transition-all font-medium placeholder-slate-500 backdrop-blur-sm" placeholder="Masukkan ID (NIM)">
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-extrabold text-slate-500 mb-2 uppercase tracking-wider">Security Key</label>
-                    <input type="password" id="loginPass" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-bold text-slate-800" placeholder="Masukkan Kata Sandi">
+                    <label class="block text-xs font-bold text-slate-300 mb-1.5 ml-1 tracking-wide uppercase">Kata Sandi</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-slate-400 group-focus-within:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </div>
+                        <input type="password" id="loginPass" required class="w-full pl-11 pr-4 py-3.5 bg-slate-800/50 border border-slate-600 rounded-2xl text-sm text-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 outline-none transition-all font-medium placeholder-slate-500 backdrop-blur-sm" placeholder="Masukkan kata sandi">
+                    </div>
                 </div>
-                <button type="submit" class="w-full bg-slate-900 hover:bg-indigo-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg hover:shadow-indigo-500/30 mt-4 flex items-center justify-center gap-2 group">
-                    <span>Initialize Workspace</span>
-                    <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-4 rounded-2xl transition-all duration-300 shadow-[0_0_15px_rgba(99,102,241,0.3)] hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] mt-4 group">
+                    <span class="flex items-center justify-center gap-2">
+                        Masuk Sekarang
+                        <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </span>
                 </button>
             </form>
+            <div class="mt-8 text-center relative z-10 pt-6 border-t border-slate-700/50">
+                <p class="text-xs text-slate-400 mb-3">Belum memiliki akses ID?</p>
+                <a href="https://wa.me/6281354875592?text=Halo%20Admin,%20saya%20ingin%20meminta%20akses%20ID%20Pengguna%20untuk%20Portal%20Tugas%20UT." target="_blank" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-500/10 text-emerald-400 font-bold rounded-xl hover:bg-emerald-500/20 transition-colors text-xs border border-emerald-500/20">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                    Hubungi via WhatsApp
+                </a>
+            </div>
         </div>
     </div>
 
     <!-- ==================== SCREEN: ADMIN DASHBOARD ==================== -->
-    <div id="adminScreen" class="hidden min-h-screen bg-slate-900 pb-20 font-sans">
-        <nav class="glass-dark border-b border-white/10 sticky top-0 z-40">
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div id="adminScreen" class="hidden min-h-screen bg-slate-900 pb-20 relative z-10">
+        <nav class="bg-slate-800/80 backdrop-blur-md border-b border-slate-700/50 sticky top-0 z-40">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16 items-center">
                     <div class="flex items-center gap-3">
-                        <div class="bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 p-2 rounded-lg">
+                        <div class="bg-emerald-500/20 text-emerald-400 p-2.5 rounded-xl border border-emerald-500/30">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         </div>
-                        <h1 class="text-lg font-bold text-white tracking-wide">System Administrator</h1>
+                        <h1 class="text-lg font-bold text-white tracking-tight">Admin Console</h1>
                     </div>
-                    <button onclick="handleLogout()" class="bg-white/5 hover:bg-rose-500/20 text-slate-300 hover:text-rose-400 border border-white/10 hover:border-rose-500/50 px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2">
-                        <span class="hidden sm:inline">Terminate Session</span>
+                    <button onclick="handleLogout()" class="bg-slate-800 hover:bg-rose-500 text-slate-300 hover:text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center gap-2 border border-slate-700 hover:border-rose-500">
+                        <span class="hidden sm:inline">Keluar</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                     </button>
                 </div>
             </div>
         </nav>
 
-        <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-white/5 shadow-2xl relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
-                    <h2 class="text-sm font-extrabold text-white mb-5 uppercase tracking-wider flex items-center gap-2">
-                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                        Provision New Identity
-                    </h2>
-                    <form id="adminAddUserForm" class="space-y-4 relative z-10">
-                        <div>
-                            <input type="text" id="newUserId" required class="w-full px-4 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-sm text-white focus:border-emerald-500 outline-none uppercase font-mono placeholder-slate-600" placeholder="NEW_USER_ID">
-                        </div>
-                        <div>
-                            <input type="text" id="newUserPass" required class="w-full px-4 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-sm text-white focus:border-emerald-500 outline-none placeholder-slate-600" placeholder="Assign Password">
-                        </div>
-                        <button type="submit" class="w-full bg-emerald-500/20 hover:bg-emerald-500 text-emerald-400 hover:text-white border border-emerald-500/50 font-bold py-3 rounded-xl transition-all">
-                            Generate Credentials
-                        </button>
-                    </form>
+        <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
+            <div class="bg-slate-800/50 backdrop-blur-sm rounded-3xl p-8 border border-slate-700/50 shadow-2xl">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30 text-emerald-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-white tracking-tight">Buat Akun Pengguna Baru</h2>
                 </div>
-
-                <div class="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-white/5 shadow-2xl relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl"></div>
-                    <h2 class="text-sm font-extrabold text-white mb-5 uppercase tracking-wider flex items-center gap-2">
-                        <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
-                        Root Security
-                    </h2>
-                    <form id="adminChangePassForm" class="space-y-4 relative z-10">
-                        <div>
-                            <input type="text" id="newAdminPass" required class="w-full px-4 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-sm text-white focus:border-indigo-500 outline-none placeholder-slate-600" placeholder="New Admin Password">
-                        </div>
-                        <button type="submit" class="w-full bg-indigo-500/20 hover:bg-indigo-500 text-indigo-400 hover:text-white border border-indigo-500/50 font-bold py-3 rounded-xl transition-all">
-                            Update Root Password
+                <form id="adminAddUserForm" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">ID Pengguna</label>
+                        <input type="text" id="newUserId" required class="w-full px-4 py-3 bg-slate-900/80 border border-slate-600 rounded-xl text-sm text-white focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400 outline-none transition-all placeholder-slate-600" placeholder="Masukkan ID">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">Kata Sandi</label>
+                        <input type="text" id="newUserPass" required class="w-full px-4 py-3 bg-slate-900/80 border border-slate-600 rounded-xl text-sm text-white focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400 outline-none transition-all placeholder-slate-600" placeholder="Masukkan sandi">
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-extrabold py-3 rounded-xl transition-colors shadow-lg shadow-emerald-500/20 h-[46px]">
+                            Tambahkan Akun
                         </button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
 
-            <h2 class="text-xs font-extrabold text-slate-500 mb-4 uppercase tracking-widest border-b border-slate-800 pb-2">Active Directory</h2>
-            <div id="adminUserList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                <!-- Data digenerate JS -->
+            <div class="bg-slate-800/50 backdrop-blur-sm rounded-3xl p-8 border border-slate-700/50 shadow-2xl">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center border border-indigo-500/30 text-indigo-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-white tracking-tight">Keamanan Master</h2>
+                </div>
+                <form id="adminChangePassForm" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">Sandi Admin Baru</label>
+                        <input type="text" id="newAdminPass" required class="w-full px-4 py-3 bg-slate-900/80 border border-slate-600 rounded-xl text-sm text-white focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-400 outline-none transition-all placeholder-slate-600" placeholder="Ketik sandi baru">
+                    </div>
+                    <div class="flex items-end">
+                        <button type="submit" class="w-full bg-indigo-500 hover:bg-indigo-400 text-white font-extrabold py-3 rounded-xl transition-colors shadow-lg shadow-indigo-500/20 h-[46px]">
+                            Ubah Sandi Admin
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div>
+                <h2 class="text-lg font-bold text-slate-300 mb-5 px-2 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    Daftar Akses Pengguna
+                </h2>
+                <div id="adminUserList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                    <!-- List of users generated by JS -->
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- ==================== SCREEN: STUDENT DASHBOARD (PRO) ==================== -->
-    <div id="mainApp" class="hidden min-h-screen pb-24">
+    <!-- ==================== SCREEN: STUDENT DASHBOARD ==================== -->
+    <div id="mainApp" class="hidden min-h-screen pb-24 relative z-10">
         <!-- Modern Glass Navbar -->
-        <nav class="glass-panel border-b border-slate-200/50 sticky top-0 z-40 shadow-sm">
+        <nav class="glass-panel border-b border-slate-200/50 sticky top-0 z-50 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16 items-center">
                     <div class="flex items-center gap-3">
                         <div class="bg-gradient-to-br from-indigo-600 to-purple-600 text-white p-2.5 rounded-xl shadow-lg shadow-indigo-200">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/></svg>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 14v7.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 21.5l4-2.222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </div>
                         <div>
                             <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Monitoring Tugas UT</h1>
                             <div class="flex items-center gap-1.5 mt-0.5">
-                                <span class="relative flex h-2 w-2">
-                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                </span>
-                                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Cloud Sync Active</p>
+                                <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest hidden sm:block">Cloud Sync Aktif</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-2 sm:gap-4">
-                        <div class="hidden sm:flex bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-extrabold items-center gap-2 border border-slate-200">
-                            <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            <span id="displayUserId" class="tracking-wider">USER</span>
+                    <div class="flex items-center gap-3">
+                        <div class="bg-slate-100 text-slate-700 px-3.5 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-slate-200 shadow-inner">
+                            <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            <span id="displayUserId">User</span>
                         </div>
-                        <button onclick="openAddModal()" class="bg-slate-900 hover:bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-slate-200 transition-all flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
-                            <span class="hidden sm:inline">Add Course</span>
+                        <button onclick="handleLogout()" class="text-slate-400 hover:text-rose-500 bg-white hover:bg-rose-50 px-4 py-2 rounded-xl text-sm font-extrabold transition-all border border-slate-200 hover:border-rose-200 shadow-sm flex items-center gap-2">
+                            <span class="hidden sm:inline">Keluar</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         </button>
-                        <button onclick="handleLogout()" class="text-slate-400 hover:text-slate-900 bg-white hover:bg-slate-100 p-2 rounded-xl transition-colors border border-slate-200 shadow-sm" title="Log Out">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <button onclick="openAddModal()" class="bg-slate-900 hover:bg-indigo-600 text-white px-5 py-2 rounded-xl text-sm font-extrabold shadow-lg shadow-slate-200 transition-all flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                            <span class="hidden sm:inline">Tambah Data</span>
                         </button>
                     </div>
                 </div>
@@ -191,31 +226,28 @@
         </nav>
 
         <main class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-            <div id="dashboardContainer" class="space-y-12">
-                <!-- Loader -->
-                <div class="flex flex-col items-center justify-center py-32">
-                    <svg class="animate-spin w-10 h-10 text-indigo-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                    <p class="text-slate-500 font-medium text-sm animate-pulse">Syncing with workspace...</p>
-                </div>
+            <div id="dashboardContainer">
+                <div class="text-center py-20 text-slate-400 font-bold animate-pulse">Sinkronisasi data dari server...</div>
             </div>
         </main>
     </div>
 
-    <!-- ==================== MODAL FORM ==================== -->
-    <div id="addModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 hidden">
-        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
-        <div class="bg-white w-full max-w-lg rounded-[24px] shadow-2xl relative z-10 modal-animate overflow-hidden border border-slate-100">
+    <!-- ==================== MODALS & COMPONENTS ==================== -->
+    
+    <!-- Modal Tambah/Edit Matkul -->
+    <div id="addModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md hidden">
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl modal-animate overflow-hidden border border-slate-200/50">
             <div class="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/50">
-                <h3 id="modalTitle" class="text-lg font-extrabold text-slate-800 tracking-tight">Course Configuration</h3>
-                <button onclick="closeAddModal()" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 p-2 rounded-xl transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <h3 id="modalTitle" class="text-xl font-extrabold text-slate-800 tracking-tight">Tambah Data</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-rose-500 hover:bg-white p-2 rounded-xl transition-all shadow-sm border border-transparent hover:border-rose-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
-            <form id="addMatkulForm" class="p-6 space-y-5 bg-white">
+            <form id="addMatkulForm" class="p-6 space-y-5">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[10px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wider">Semester</label>
-                        <select id="matkulSemester" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-bold text-slate-700">
+                        <label class="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-widest">Semester</label>
+                        <select id="matkulSemester" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-bold text-slate-700">
                             <option value="1">Semester 1</option> <option value="2">Semester 2</option>
                             <option value="3">Semester 3</option> <option value="4">Semester 4</option>
                             <option value="5">Semester 5</option> <option value="6">Semester 6</option>
@@ -224,60 +256,57 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[10px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wider">Kategori</label>
-                        <select id="matkulKategori" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-bold text-slate-700">
+                        <label class="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-widest">Kategori</label>
+                        <select id="matkulKategori" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-bold text-slate-700">
                             <option value="Wajib">Wajib</option> <option value="Pilihan">Pilihan</option>
                             <option value="Praktik">Praktikum</option> <option value="TAP">TAP</option>
                         </select>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wider">Kode Matkul</label>
-                    <input type="text" id="matkulCode" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none uppercase font-extrabold text-slate-800" placeholder="e.g. EKMA4111">
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-widest">Kode Matkul</label>
+                    <input type="text" id="matkulCode" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none uppercase font-extrabold text-slate-800 placeholder-slate-400" placeholder="Contoh: EKMA4111">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wider">Nama Mata Kuliah</label>
-                    <input type="text" id="matkulName" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-bold text-slate-800" placeholder="e.g. Pengantar Bisnis">
+                    <label class="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-widest">Nama Matkul</label>
+                    <input type="text" id="matkulName" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-bold text-slate-800 placeholder-slate-400" placeholder="Contoh: Pengantar Bisnis">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[10px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wider">Tutor Utama</label>
-                        <input type="text" id="matkulDosen1" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-medium" placeholder="Nama Tutor">
+                        <label class="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-widest">Tutor 1 (Wajib)</label>
+                        <input type="text" id="matkulDosen1" required class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-semibold text-slate-700 placeholder-slate-400" placeholder="Nama Tutor">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-extrabold text-slate-500 mb-1.5 uppercase tracking-wider">Tutor Kedua (Ops.)</label>
-                        <input type="text" id="matkulDosen2" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-medium" placeholder="Opsional">
+                        <label class="block text-xs font-bold text-slate-500 mb-1.5 ml-1 uppercase tracking-widest">Tutor 2 (Ops)</label>
+                        <input type="text" id="matkulDosen2" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none font-semibold text-slate-700 placeholder-slate-400" placeholder="Opsional">
                     </div>
                 </div>
-                <div class="pt-2">
-                    <button type="submit" class="w-full bg-slate-900 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-indigo-500/30">
-                        Deploy Data
-                    </button>
-                </div>
+                <button type="submit" class="w-full mt-4 bg-slate-900 hover:bg-indigo-600 text-white font-extrabold py-4 rounded-2xl transition-all shadow-lg hover:shadow-indigo-200">
+                    Simpan Data
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- Confirm Modal -->
-    <div id="customConfirm" class="fixed inset-0 z-[100] flex items-center justify-center hidden transition-all">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
-        <div class="bg-white w-full max-w-sm rounded-[24px] p-6 shadow-2xl relative z-10 modal-animate text-center border border-slate-100">
-            <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-5">
+    <!-- Modal Custom Confirm -->
+    <div id="customConfirm" class="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm hidden">
+        <div class="bg-white w-full max-w-sm rounded-[2rem] p-6 shadow-2xl modal-animate text-center border border-slate-200">
+            <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-rose-100">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
-            <h3 class="text-lg font-extrabold text-slate-900 mb-1">Hapus Data?</h3>
-            <p id="confirmMessage" class="text-sm text-slate-500 mb-6">Tindakan ini permanen dan tidak bisa dikembalikan.</p>
+            <h3 class="text-xl font-extrabold text-slate-800 mb-2 tracking-tight">Konfirmasi Tindakan</h3>
+            <p id="confirmMessage" class="text-sm text-slate-500 mb-6 font-medium">Apakah Anda yakin ingin menghapus data ini?</p>
             <div class="flex gap-3">
-                <button onclick="closeConfirm()" class="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">Batal</button>
-                <button id="confirmYesBtn" class="flex-1 px-4 py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-rose-200">Hapus</button>
+                <button onclick="closeConfirm()" class="flex-1 px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold rounded-xl transition-colors">Batal</button>
+                <button id="confirmYesBtn" class="flex-1 px-4 py-3 bg-rose-500 hover:bg-rose-600 text-white font-extrabold rounded-xl transition-colors shadow-md shadow-rose-200">Ya, Hapus</button>
             </div>
         </div>
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-6 right-6 transform transition-all duration-300 translate-y-24 opacity-0 bg-slate-900 text-white rounded-xl shadow-2xl p-4 flex items-center z-[110] max-w-sm pointer-events-none border border-slate-700">
+    <div id="toast" class="fixed bottom-6 right-6 transform transition-all duration-300 translate-y-24 opacity-0 bg-white rounded-2xl shadow-xl border border-slate-200 p-4 flex items-center z-[110] max-w-sm pointer-events-none">
         <div id="toastIcon" class="mr-3 flex-shrink-0"></div>
-        <div><p id="toastMessage" class="text-sm font-bold tracking-wide"></p></div>
+        <div><p id="toastMessage" class="text-sm font-extrabold text-slate-800 tracking-tight"></p></div>
     </div>
 
     <!-- ==================== SCRIPT LOGIC ==================== -->
@@ -300,11 +329,16 @@
         const auth = getAuth(app);
 
         let userId = null;
+        let userRole = null; 
         let subjects = [];
         let semesterDates = {};
-        let unsubSubjects = null, unsubDates = null, unsubAdmin = null;
+        
+        let unsubSubjects = null;
+        let unsubDates = null;
+        let unsubAdmin = null;
+        
         let editingMatkulId = null;
-        let collapsedSemesters = new Set(); // Tambahan state untuk menyimpan semester yang diminimize
+        let collapsedSemesters = new Set(); 
 
         const appId = "tugas_ut_v3";
         const sessions = [
@@ -318,12 +352,20 @@
             { id: 's8', label: 'Sesi 8', isTask: false }
         ];
 
+        let currentConfirmCallback = null;
+
         async function init() {
             const savedRole = localStorage.getItem('ut_role');
-            if (savedRole) { checkLocalSession(true); } else { showScreen('login', true); }
+            if (savedRole) {
+                checkLocalSession(true);
+            } else {
+                showScreen('login', true);
+            }
 
             onAuthStateChanged(auth, async (user) => {
-                if (!user) { try { await signInAnonymously(auth); } catch (e) { showToast("Gagal koneksi server", "error"); } }
+                if (!user) {
+                    try { await signInAnonymously(auth); } catch (e) { showToast("Gagal koneksi server", "error"); }
+                }
             });
 
             document.getElementById('loginForm').addEventListener('submit', handleLoginSubmit);
@@ -342,6 +384,8 @@
             } else if (savedRole === 'student' && savedId) {
                 savedId = savedId.toUpperCase();
                 localStorage.setItem('ut_id', savedId);
+
+                userRole = 'student';
                 userId = savedId;
                 document.getElementById('displayUserId').textContent = userId;
                 showScreen('student', instant);
@@ -367,122 +411,174 @@
                     document.getElementById('mainApp').classList.remove('hidden');
                 }
             };
-            if (instant) { executeShow(); } else { setTimeout(executeShow, 100); }
+
+            if (instant) executeShow();
+            else setTimeout(executeShow, 100);
         }
 
         async function handleLoginSubmit(e) {
             e.preventDefault();
             const rawId = document.getElementById('loginId').value.trim();
             const pass = document.getElementById('loginPass').value;
-            const id = rawId.toUpperCase();
+            const id = rawId.toUpperCase(); 
 
             if (id === 'ADMIN') {
                 try {
-                    const adminDocSnap = await getDoc(doc(db, `artifacts/${appId}/admin_config`, 'credentials'));
-                    let validPass = adminDocSnap.exists() && adminDocSnap.data().password ? adminDocSnap.data().password : 'admin';
+                    const adminDocRef = doc(db, `artifacts/${appId}/admin_config`, 'credentials');
+                    const adminDocSnap = await getDoc(adminDocRef);
+                    let validPass = 'admin'; 
+                    
+                    if (adminDocSnap.exists() && adminDocSnap.data().password) {
+                        validPass = adminDocSnap.data().password;
+                    }
+
                     if (pass === validPass) {
                         localStorage.setItem('ut_role', 'admin');
-                        checkLocalSession(); showToast("Admin Access Granted", "success");
-                    } else { showToast("Invalid Security Key", "error"); }
-                } catch (err) { showToast("Verification Failed", "error"); }
+                        checkLocalSession();
+                        showToast("Welcome to Console, Admin", "success");
+                    } else {
+                        showToast("Access Denied: Invalid Credentials", "error");
+                    }
+                } catch (err) { showToast("System Error", "error"); }
                 return;
             }
 
             try {
-                const docSnap = await getDoc(doc(db, `artifacts/${appId}/admin_users`, id));
+                const docRef = doc(db, `artifacts/${appId}/admin_users`, id);
+                const docSnap = await getDoc(docRef);
+
                 if (docSnap.exists() && docSnap.data().password === pass) {
                     localStorage.setItem('ut_role', 'student');
                     localStorage.setItem('ut_id', id);
-                    checkLocalSession(); showToast(`Workspace Loaded: ${id}`, "success");
-                } else { showToast("Invalid ID or Password", "error"); }
-            } catch (err) { showToast("Connection Error", "error"); }
+                    checkLocalSession();
+                    showToast(`Welcome back, ${id}`, "success");
+                } else {
+                    showToast("Access Denied: ID or Password incorrect", "error");
+                }
+            } catch (err) { showToast("System Error", "error"); }
         }
 
         window.handleLogout = function() {
             localStorage.removeItem('ut_role'); localStorage.removeItem('ut_id');
             if(unsubSubjects) unsubSubjects(); if(unsubDates) unsubDates(); if(unsubAdmin) unsubAdmin();
-            userId = null; subjects = []; semesterDates = {};
+            userId = null; userRole = null; subjects = []; semesterDates = {}; editingMatkulId = null; collapsedSemesters.clear();
             document.getElementById('loginId').value = ''; document.getElementById('loginPass').value = '';
-            showScreen('login'); showToast("Session Terminated", "success");
+            document.getElementById('dashboardContainer').innerHTML = '';
+            showScreen('login'); showToast("Session ended", "success");
         }
 
+        // --- Admin Logic ---
         function setupAdminListeners() {
-            unsubAdmin = onSnapshot(collection(db, `artifacts/${appId}/admin_users`), (snapshot) => {
-                const container = document.getElementById('adminUserList'); container.innerHTML = '';
+            const usersRef = collection(db, `artifacts/${appId}/admin_users`);
+            unsubAdmin = onSnapshot(usersRef, (snapshot) => {
+                const container = document.getElementById('adminUserList');
+                container.innerHTML = '';
                 snapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     container.innerHTML += `
-                        <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 flex justify-between items-center group">
-                            <div><p class="text-sm font-bold text-white">${docSnap.id}</p><p class="text-[10px] text-emerald-400 font-mono mt-0.5">Key: ${data.password}</p></div>
-                            <button onclick="deleteUser('${docSnap.id}')" class="text-slate-500 hover:text-rose-500 bg-slate-900 p-2 rounded-lg transition-colors border border-slate-700 hover:border-rose-500/50"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-                        </div>`;
+                        <div class="bg-slate-800/50 backdrop-blur-sm p-5 rounded-2xl border border-slate-700/50 flex justify-between items-center group shadow-md hover:border-slate-600 transition-colors">
+                            <div>
+                                <p class="text-sm font-extrabold text-white mb-1">${docSnap.id}</p>
+                                <p class="text-[10px] text-slate-400 font-mono bg-slate-900/50 px-2 py-0.5 rounded-md border border-slate-800">Pass: ${data.password}</p>
+                            </div>
+                            <button onclick="deleteUser('${docSnap.id}')" class="text-slate-500 hover:text-rose-400 bg-slate-900/50 hover:bg-rose-500/10 p-2.5 rounded-xl transition-all border border-transparent hover:border-rose-500/30">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    `;
                 });
+                if(snapshot.empty) container.innerHTML = `<div class="col-span-full text-slate-500 text-sm italic">No active users found.</div>`;
             });
         }
+
         async function handleAdminAddUser(e) {
             e.preventDefault();
-            const id = document.getElementById('newUserId').value.trim().toUpperCase();
-            const pass = document.getElementById('newUserPass').value.trim();
-            if (!id || !pass) return;
-            await setDoc(doc(db, `artifacts/${appId}/admin_users`, id), { password: pass, createdAt: Date.now() });
-            document.getElementById('adminAddUserForm').reset(); showToast("Identity Provisioned", "success");
+            const rawNewId = document.getElementById('newUserId').value.trim();
+            const newPass = document.getElementById('newUserPass').value.trim();
+            const newId = rawNewId.toUpperCase(); 
+
+            if (!newId || !newPass) return;
+            try {
+                await setDoc(doc(db, `artifacts/${appId}/admin_users`, newId), { password: newPass, createdAt: Date.now() });
+                document.getElementById('adminAddUserForm').reset();
+                showToast("User account provisioned", "success");
+            } catch (err) { showToast("Provisioning failed", "error"); }
         }
+
         window.deleteUser = function(id) {
-            showConfirm(`Revoke access for ${id}?`, async () => { await deleteDoc(doc(db, `artifacts/${appId}/admin_users`, id)); showToast("Access Revoked", "success"); });
+            showConfirm(`Revoke access for user ${id}?`, async () => {
+                await deleteDoc(doc(db, `artifacts/${appId}/admin_users`, id));
+                showToast("Access revoked", "success");
+            });
         }
+
         async function handleAdminChangePass(e) {
             e.preventDefault();
-            const pass = document.getElementById('newAdminPass').value.trim();
-            await setDoc(doc(db, `artifacts/${appId}/admin_config`, 'credentials'), { password: pass }, { merge: true });
-            document.getElementById('adminChangePassForm').reset(); showToast("Root Password Updated", "success");
+            const newPass = document.getElementById('newAdminPass').value.trim();
+            if (!newPass) return;
+            try {
+                await setDoc(doc(db, `artifacts/${appId}/admin_config`, 'credentials'), { password: newPass }, { merge: true });
+                document.getElementById('adminChangePassForm').reset();
+                showToast("Master security updated", "success");
+            } catch (err) { showToast("Security update failed", "error"); }
         }
 
         window.showConfirm = function(message, callback) {
-            document.getElementById('confirmMessage').textContent = message; currentConfirmCallback = callback;
+            document.getElementById('confirmMessage').textContent = message;
+            currentConfirmCallback = callback;
             document.getElementById('customConfirm').classList.remove('hidden');
         }
-        window.closeConfirm = function() { document.getElementById('customConfirm').classList.add('hidden'); currentConfirmCallback = null; }
-        document.getElementById('confirmYesBtn').addEventListener('click', () => { if (currentConfirmCallback) currentConfirmCallback(); closeConfirm(); });
-
-        function showToast(msg, type="info") {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMessage').textContent = msg;
-            document.getElementById('toastIcon').innerHTML = type === 'success' 
-                ? `<div class="bg-emerald-500 text-white p-1.5 rounded-full"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg></div>`
-                : `<div class="bg-rose-500 text-white p-1.5 rounded-full"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>`;
-            toast.classList.remove('translate-y-24', 'opacity-0'); setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3000);
+        window.closeConfirm = function() {
+            document.getElementById('customConfirm').classList.add('hidden');
+            currentConfirmCallback = null;
         }
+        document.getElementById('confirmYesBtn').addEventListener('click', () => {
+            if (currentConfirmCallback) currentConfirmCallback();
+            closeConfirm();
+        });
 
+        // --- Student Dashboard Logic ---
         function setupStudentListeners() {
-            unsubSubjects = onSnapshot(collection(db, `artifacts/${appId}/users/${userId}/matkul`), (snapshot) => {
+            if (!userId) return;
+            
+            const subjectsRef = collection(db, `artifacts/${appId}/users/${userId}/matkul`);
+            unsubSubjects = onSnapshot(subjectsRef, (snapshot) => {
                 subjects = []; snapshot.forEach((doc) => { subjects.push({ id: doc.id, ...doc.data() }); }); renderDashboard();
             });
-            unsubDates = onSnapshot(collection(db, `artifacts/${appId}/users/${userId}/dates`), (snapshot) => {
+
+            const datesRef = collection(db, `artifacts/${appId}/users/${userId}/dates`);
+            unsubDates = onSnapshot(datesRef, (snapshot) => {
                 semesterDates = {}; snapshot.forEach((doc) => { semesterDates[doc.id] = doc.data(); }); renderDashboard();
             });
         }
         
         window.openAddModal = function() {
             editingMatkulId = null; document.getElementById('addMatkulForm').reset();
-            document.getElementById('modalTitle').textContent = 'Deploy New Course';
+            document.getElementById('modalTitle').textContent = 'Tambah Data';
             document.getElementById('addModal').classList.remove('hidden');
         }
-        window.closeAddModal = function() { document.getElementById('addModal').classList.add('hidden'); }
+
+        window.closeAddModal = function() { document.getElementById('addModal').classList.add('hidden'); editingMatkulId = null; }
+
         window.editMatkul = function(id) {
-            const m = subjects.find(s => s.id === id); if (!m) return;
+            const matkul = subjects.find(s => s.id === id); if (!matkul) return;
             editingMatkulId = id;
-            ['Code', 'Name', 'Semester', 'Kategori', 'Dosen1', 'Dosen2'].forEach(k => document.getElementById(`matkul${k}`).value = m[k.toLowerCase()] || '');
-            document.getElementById('modalTitle').textContent = 'Reconfigure Course'; document.getElementById('addModal').classList.remove('hidden');
+            document.getElementById('matkulCode').value = matkul.code; document.getElementById('matkulName').value = matkul.name;
+            document.getElementById('matkulSemester').value = matkul.semester; document.getElementById('matkulKategori').value = matkul.kategori;
+            document.getElementById('matkulDosen1').value = matkul.dosen1; document.getElementById('matkulDosen2').value = matkul.dosen2 || '';
+            document.getElementById('modalTitle').textContent = 'Update Data'; document.getElementById('addModal').classList.remove('hidden');
         }
+
         async function handleAddMatkul(e) {
             e.preventDefault();
             const data = { code: document.getElementById('matkulCode').value.toUpperCase(), name: document.getElementById('matkulName').value, semester: document.getElementById('matkulSemester').value, kategori: document.getElementById('matkulKategori').value, dosen1: document.getElementById('matkulDosen1').value, dosen2: document.getElementById('matkulDosen2').value };
             const docId = editingMatkulId || `mk_${Date.now()}`;
             if (!editingMatkulId) { data.tasks = {}; data.nilai = {}; data.na = {}; }
             await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, docId), data, { merge: true });
-            closeAddModal(); showToast("Data Synced to Cloud", "success");
+            closeAddModal(); showToast("Data berhasil disimpan", "success");
         }
-        window.deleteMatkul = function(id) { showConfirm("Hapus data mata kuliah ini?", async () => { await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, id)); showToast("Course Deleted", "success"); }); }
+
+        window.deleteMatkul = function(id) { showConfirm("Hapus data mata kuliah ini?", async () => { await deleteDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, id)); showToast("Data dihapus", "success"); }); }
         window.toggleTask = async function(mId, tId, v) { await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, mId), { tasks: { [tId]: v } }, { merge: true }); }
         window.updateNilai = async function(mId, iId, v) { await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, mId), { nilai: { [iId]: v } }, { merge: true }); }
         window.toggleNA = async function(mId, tId, v) { await setDoc(doc(db, `artifacts/${appId}/users/${userId}/matkul`, mId), { na: { [tId]: v } }, { merge: true }); }
@@ -493,41 +589,35 @@
         }
         
         window.toggleSemester = function(sem) {
-            if (collapsedSemesters.has(sem)) {
-                collapsedSemesters.delete(sem);
-            } else {
-                collapsedSemesters.add(sem);
-            }
-            renderDashboard(); // Re-render untuk merubah posisi dari grid ke tabel
+            if (collapsedSemesters.has(sem)) collapsedSemesters.delete(sem); else collapsedSemesters.add(sem);
+            renderDashboard(); 
         }
 
         window.saveDates = async function(semId) {
-            const data = {}; sessions.forEach(s => { data[`start_${s.id}`] = document.getElementById(`date_start_${semId}_${s.id}`).value; data[`end_${s.id}`] = document.getElementById(`date_end_${semId}_${s.id}`).value; });
-            await setDoc(doc(db, `artifacts/${appId}/users/${userId}/dates`, semId), data); showToast("Timeline Updated", "success");
+            const n = {}; sessions.forEach(s => { n[`start_${s.id}`] = document.getElementById(`date_start_${semId}_${s.id}`).value; n[`end_${s.id}`] = document.getElementById(`date_end_${semId}_${s.id}`).value; });
+            await setDoc(doc(db, `artifacts/${appId}/users/${userId}/dates`, semId), n); showToast("Timeline updated", "success");
         }
 
-        function checkStatus(startDate, endDate, isCompleted) {
-            if (isCompleted) return { state: 'done', bg: 'bg-emerald-50/50', border: 'border-emerald-200', dot: 'bg-emerald-500', label: 'SELESAI' };
-            if (!startDate || !endDate) return { state: 'locked', bg: 'bg-slate-50', border: 'border-slate-200 border-dashed opacity-60', dot: 'bg-slate-300', label: 'LOCKED' };
-            
-            const now = new Date(), start = new Date(startDate), end = new Date(endDate); end.setHours(23, 59, 59, 999); 
-            
-            if (now < start) return { state: 'locked', bg: 'bg-slate-50', border: 'border-slate-200 opacity-60', dot: 'bg-slate-300', label: 'WAITING' };
-            if (now > end) return { state: 'overdue', bg: 'bg-rose-50/30', border: 'glow-danger', dot: 'bg-rose-500 animate-pulse', label: 'OVERDUE' };
-            return { state: 'active', bg: 'bg-indigo-50/20', border: 'glow-active', dot: 'bg-blue-500', label: 'BERJALAN' }; // The powerful state
+        function checkStatus(sd, ed, isCompleted) {
+            if (isCompleted) return { state: 'done', bg: 'bg-emerald-50/50', border: 'border-emerald-200', label: 'SELESAI', dot: 'bg-emerald-500' };
+            if (!sd || !ed) return { state: 'locked', bg: 'bg-slate-50', border: 'border-slate-200 border-dashed', label: 'TERKUNCI', dot: 'bg-slate-300' };
+            const n = new Date(), s = new Date(sd), e = new Date(ed); e.setHours(23, 59, 59, 999); 
+            if (n < s) return { state: 'waiting', bg: 'bg-slate-50/30', border: 'border-slate-200', label: 'MENUNGGU', dot: 'bg-slate-400' };
+            if (n > e) return { state: 'overdue', bg: 'bg-rose-50/50', border: 'border-rose-300 shadow-sm', label: 'TERLEWAT', dot: 'bg-rose-500' };
+            return { state: 'active', bg: 'bg-white', border: 'glow-active', label: 'BERJALAN', dot: '' };
         }
+
         function formatDateShort(ds) { if(!ds) return '--/--'; const d = new Date(ds); return `${d.getDate()}/${d.getMonth()+1}`; }
 
         function renderDashboard() {
             const container = document.getElementById('dashboardContainer'); container.innerHTML = '';
             if (subjects.length === 0) {
-                container.innerHTML = `<div class="text-center py-32 glass-panel rounded-[2rem] border border-slate-200 border-dashed"><div class="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6 text-slate-300"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg></div><h3 class="text-xl font-extrabold text-slate-700 mb-2 tracking-tight">No Active Courses</h3><p class="text-slate-500 text-sm font-medium">Deploy your first course using the button above.</p></div>`;
+                container.innerHTML = `<div class="text-center py-32 glass-panel rounded-[2rem] border border-slate-200 border-dashed"><div class="w-20 h-20 bg-slate-100 rounded-3xl flex items-center justify-center mx-auto mb-6 text-slate-300"><svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg></div><h3 class="text-xl font-extrabold text-slate-700 mb-2 tracking-tight">Belum Ada Data</h3><p class="text-slate-500 text-sm font-medium">Tambah data pertama Anda menggunakan tombol di atas.</p></div>`;
                 return;
             }
 
             const grouped = {}; subjects.forEach(s => { if (!grouped[s.semester]) grouped[s.semester] = []; grouped[s.semester].push(s); });
             
-            // Siapkan 2 area: Area Atas (Grid untuk yang di-minimize), dan Area Bawah (Tabel yang terbuka)
             let collapsedHtml = `<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">`;
             let expandedHtml = `<div class="space-y-12">`;
             let hasCollapsed = false;
@@ -535,7 +625,6 @@
             Object.keys(grouped).sort((a,b)=>a-b).forEach(sem => {
                 const semDates = semesterDates[`sem_${sem}`] || {};
                 
-                // Jika semester ini masuk dalam daftar yang diminimize, render sebagai kartu kecil di Grid Atas
                 if (collapsedSemesters.has(sem)) {
                     hasCollapsed = true;
                     collapsedHtml += `
@@ -548,11 +637,9 @@
                             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">${grouped[sem].length} Modules</p>
                         </div>`;
                 } else {
-                    // Jika tidak diminimize, render tabel penuh seperti biasa
                     let html = `
                     <div class="mb-14 relative animate-modalFadeIn">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-4">
-                            <!-- Tombol Minimize -->
                             <div class="flex items-center gap-4 cursor-pointer group" onclick="toggleSemester('${sem}')" title="Minimize Semester">
                                 <div class="bg-slate-900 group-hover:bg-rose-500 transition-all text-white px-5 py-2.5 rounded-xl font-extrabold text-sm shadow-xl shadow-slate-200 flex items-center gap-3">
                                     <span>SEMESTER ${sem}</span>
@@ -586,18 +673,18 @@
                             </div>
                         </div>
 
-                        <div class="glass-panel rounded-[24px] border border-slate-200/60 shadow-xl overflow-auto max-h-[75vh] hide-scrollbar">
-                            <table class="w-full text-left border-collapse min-w-[1100px]">
+                        <div class="glass-panel rounded-[24px] border border-slate-200/60 shadow-xl overflow-auto max-h-[75vh] hide-scrollbar relative">
+                            <table class="w-full text-left border-collapse min-w-[1000px]">
                                 <thead>
-                                    <tr class="sticky top-0 z-30 bg-slate-50/95 border-b border-slate-200 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest backdrop-blur-xl shadow-sm">
-                                        <th class="p-5 w-72 sticky left-0 top-0 z-40 border-r border-slate-200 bg-slate-50/95 backdrop-blur-xl">Course Information</th>`;
+                                    <tr class="sticky top-0 z-30 bg-slate-50/95 border-b border-slate-200 text-[9px] font-extrabold text-slate-500 uppercase tracking-widest backdrop-blur-xl shadow-sm">
+                                        <th class="p-3 w-56 sticky left-0 top-0 z-40 border-r border-slate-200 bg-slate-50/95 backdrop-blur-xl">Informasi Mata Kuliah</th>`;
                                         
                                     sessions.forEach(ses => {
                                         const ds = formatDateShort(semDates[`start_${ses.id}`]), de = formatDateShort(semDates[`end_${ses.id}`]);
-                                        html += `<th class="p-4 text-center min-w-[120px] border-r border-slate-200 last:border-0">
-                                            <div class="flex flex-col items-center gap-1.5">
+                                        html += `<th class="p-2 text-center min-w-[90px] border-r border-slate-200 last:border-0 bg-slate-50/95 backdrop-blur-xl">
+                                            <div class="flex flex-col items-center gap-1">
                                                 <span class="text-slate-700">${ses.label}</span>
-                                                <span class="text-[9px] bg-slate-200/50 text-slate-500 px-2 py-0.5 rounded-md border border-slate-200/50 tracking-normal">${ds} - ${de}</span>
+                                                <span class="text-[8px] bg-slate-200/50 text-slate-500 px-1.5 py-0.5 rounded-md border border-slate-200/50 tracking-normal">${ds} - ${de}</span>
                                             </div>
                                         </th>`;
                                     });
@@ -622,32 +709,32 @@
                         const progressColor = progressPct === 100 ? 'bg-emerald-500' : 'bg-indigo-500';
 
                         html += `<tr class="group hover:bg-white/60 transition-colors">
-                                    <td class="p-5 sticky left-0 z-10 border-r border-slate-100 bg-white/80 backdrop-blur-md group-hover:bg-white transition-colors align-top">
+                                    <td class="p-3 sticky left-0 z-10 border-r border-slate-100 bg-white/80 backdrop-blur-md group-hover:bg-white transition-colors align-top">
                                         <div class="relative">
-                                            <div class="absolute -top-2 -right-2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all z-20">
-                                                <button onclick="editMatkul('${matkul.id}')" class="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 bg-white rounded-lg p-2 shadow-md border border-slate-200"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>
-                                                <button onclick="deleteMatkul('${matkul.id}')" class="text-slate-400 hover:text-rose-600 hover:bg-rose-50 bg-white rounded-lg p-2 shadow-md border border-slate-200"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                                            <div class="absolute -top-1 -right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-all z-20">
+                                                <button onclick="editMatkul('${matkul.id}')" class="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 bg-white rounded-md p-1.5 shadow-sm border border-slate-200"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>
+                                                <button onclick="deleteMatkul('${matkul.id}')" class="text-slate-400 hover:text-rose-600 hover:bg-rose-50 bg-white rounded-md p-1.5 shadow-sm border border-slate-200"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                                             </div>
                                             
-                                            <h3 class="font-extrabold text-slate-800 text-sm leading-tight mb-1 text-balance pr-12">${matkul.name}</h3>
-                                            <div class="flex items-center gap-2 mb-3">
-                                                <p class="text-[11px] font-bold text-slate-400 italic">${matkul.code}</p>
-                                                <span class="inline-block px-2 py-0.5 bg-indigo-50 text-indigo-600 text-[8px] font-extrabold uppercase tracking-widest rounded-md border border-indigo-100">${matkul.kategori}</span>
+                                            <h3 class="font-extrabold text-slate-800 text-xs leading-tight mb-1 text-balance pr-10">${matkul.name}</h3>
+                                            <div class="flex items-center gap-1.5 mb-2">
+                                                <p class="text-[10px] font-bold text-slate-400 italic">${matkul.code}</p>
+                                                <span class="inline-block px-1.5 py-0.5 bg-indigo-50 text-indigo-600 text-[7px] font-extrabold uppercase tracking-widest rounded border border-indigo-100">${matkul.kategori}</span>
                                             </div>
                                             
-                                            <div class="mb-4 pr-4">
-                                                <div class="flex justify-between text-[9px] font-extrabold text-slate-400 mb-1">
+                                            <div class="mb-2 pr-2">
+                                                <div class="flex justify-between text-[8px] font-extrabold text-slate-400 mb-1">
                                                     <span>PROGRESS</span>
                                                     <span class="${progressPct===100?'text-emerald-500':'text-indigo-500'}">${progressPct}%</span>
                                                 </div>
-                                                <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                                    <div class="${progressColor} h-1.5 rounded-full transition-all duration-1000 ease-out" style="width: ${progressPct}%"></div>
+                                                <div class="w-full bg-slate-100 rounded-full h-1 overflow-hidden">
+                                                    <div class="${progressColor} h-1 rounded-full transition-all duration-1000 ease-out" style="width: ${progressPct}%"></div>
                                                 </div>
                                             </div>
 
-                                            <div class="text-[10px] text-slate-500 font-medium space-y-1 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-                                                <div class="flex items-center gap-1.5"><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> <span class="truncate w-48">${matkul.dosen1}</span></div>
-                                                ${matkul.dosen2 ? `<div class="flex items-center gap-1.5"><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> <span class="truncate w-48">${matkul.dosen2}</span></div>` : ''}
+                                            <div class="text-[9px] text-slate-500 font-medium space-y-1 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                                                <div class="flex items-center gap-1.5"><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> <span class="truncate w-36">${matkul.dosen1}</span></div>
+                                                ${matkul.dosen2 ? `<div class="flex items-center gap-1.5"><svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg> <span class="truncate w-36">${matkul.dosen2}</span></div>` : ''}
                                             </div>
                                         </div>
                                     </td>`;
@@ -663,62 +750,62 @@
                             const tStat = checkStatus(start, end, isTDone);
                             const isTNA = matkul.na && matkul.na[`tugas_${ses.id}`] ? true : false;
 
-                            html += `<td class="p-3 border-r border-slate-100/50 last:border-0 align-top">
-                                <div class="flex flex-col gap-3 h-full">
-                                    <div class="relative rounded-2xl p-3 border ${isDNA ? 'border-slate-200 bg-slate-100 opacity-60 grayscale' : `${dStat.border} ${dStat.bg}`} transition-all duration-300">
+                            html += `<td class="p-2 border-r border-slate-100/50 last:border-0 align-top">
+                                <div class="flex flex-col gap-2 h-full">
+                                    <div class="relative rounded-xl p-2 border ${isDNA ? 'border-slate-200 bg-slate-100 opacity-60 grayscale' : `${dStat.border} ${dStat.bg}`} transition-all duration-300">
                                         ${isDNA ? `
-                                        <div class="absolute -top-2 right-2 flex items-center gap-1 bg-slate-200 px-1.5 py-0.5 rounded-full border border-slate-300 shadow-sm">
-                                            <span class="text-[8px] font-extrabold text-slate-500 tracking-widest">TIDAK ADA</span>
+                                        <div class="absolute -top-1.5 right-1.5 flex items-center gap-1 bg-slate-200 px-1 py-0.5 rounded border border-slate-300 shadow-sm">
+                                            <span class="text-[7px] font-extrabold text-slate-500 tracking-widest">TIDAK ADA</span>
                                         </div>` :
                                         dStat.state === 'active' ? `
-                                        <div class="absolute -top-2 right-2 flex items-center gap-1.5 bg-white px-2 py-0.5 rounded-full border border-blue-200 shadow-sm">
+                                        <div class="absolute -top-1.5 right-1.5 flex items-center gap-1 bg-white px-1.5 py-0.5 rounded border border-blue-200 shadow-sm">
                                             <span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"></span></span>
-                                            <span class="text-[8px] font-extrabold text-blue-600 tracking-widest">${dStat.label}</span>
+                                            <span class="text-[7px] font-extrabold text-blue-600 tracking-widest">${dStat.label}</span>
                                         </div>` : `
-                                        <div class="absolute -top-2 right-2 flex items-center gap-1 bg-white px-1.5 py-0.5 rounded-full border border-slate-100 shadow-sm">
-                                            <div class="w-1.5 h-1.5 rounded-full ${dStat.dot}"></div><span class="text-[8px] font-extrabold text-slate-500 tracking-widest">${dStat.label}</span>
+                                        <div class="absolute -top-1.5 right-1.5 flex items-center gap-1 bg-white px-1 py-0.5 rounded border border-slate-100 shadow-sm">
+                                            <div class="w-1.5 h-1.5 rounded-full ${dStat.dot}"></div><span class="text-[7px] font-extrabold text-slate-500 tracking-widest">${dStat.label}</span>
                                         </div>
                                         `}
                                         
-                                        <div class="flex items-center justify-between mb-3 mt-1">
-                                            <label class="flex items-center gap-3 cursor-pointer">
+                                        <div class="flex items-center justify-between mb-2 mt-0.5">
+                                            <label class="flex items-center gap-2 cursor-pointer">
                                                 <input type="checkbox" ${isDDone ? 'checked' : ''} ${dStat.state==='locked' || isDNA ? 'disabled' : ''} onchange="toggleTask('${matkul.id}', 'diskusi_${ses.id}', this.checked)" class="cyber-checkbox flex-shrink-0">
-                                                <span class="text-[11px] font-extrabold text-slate-700 ${isDDone || isDNA ? 'line-through opacity-40' : ''}">Diskusi</span>
+                                                <span class="text-[10px] font-extrabold text-slate-700 ${isDDone || isDNA ? 'line-through opacity-40' : ''}">Diskusi</span>
                                             </label>
                                             <button onclick="toggleNA('${matkul.id}', 'diskusi_${ses.id}', ${!isDNA})" class="text-slate-400 hover:text-rose-500 transition-colors" title="${isDNA ? 'Aktifkan Kembali' : 'Tandai Tidak Ada'}">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
                                             </button>
                                         </div>
-                                        <input type="number" placeholder="Nilai" value="${matkul.nilai && matkul.nilai[`nilai_d_${ses.id}`] ? matkul.nilai[`nilai_d_${ses.id}`] : ''}" onchange="updateNilai('${matkul.id}', 'nilai_d_${ses.id}', this.value)" ${dStat.state==='locked' || isDNA ? 'disabled' : ''} class="w-full bg-white/80 border border-slate-200 rounded-lg text-[11px] px-2 py-1.5 text-center font-extrabold text-slate-800 focus:border-indigo-500 outline-none transition-all disabled:opacity-50 hover:shadow-sm">
+                                        <input type="number" placeholder="Nilai" value="${matkul.nilai && matkul.nilai[`nilai_d_${ses.id}`] ? matkul.nilai[`nilai_d_${ses.id}`] : ''}" onchange="updateNilai('${matkul.id}', 'nilai_d_${ses.id}', this.value)" ${dStat.state==='locked' || isDNA ? 'disabled' : ''} class="w-full bg-white/80 border border-slate-200 rounded text-[10px] px-1.5 py-1 text-center font-extrabold text-slate-800 focus:border-indigo-500 outline-none transition-all disabled:opacity-50 hover:shadow-sm">
                                     </div>`;
 
                             if (ses.hasTask) {
                                 html += `
-                                    <div class="mt-auto relative rounded-2xl p-3 border ${isTNA ? 'border-slate-200 bg-slate-100 opacity-60 grayscale' : `${tStat.border} ${tStat.bg}`} transition-all duration-300">
+                                    <div class="mt-auto relative rounded-xl p-2 border ${isTNA ? 'border-slate-200 bg-slate-100 opacity-60 grayscale' : `${tStat.border} ${tStat.bg}`} transition-all duration-300">
                                         ${isTNA ? `
-                                        <div class="absolute -top-2 right-2 flex items-center gap-1 bg-slate-200 px-1.5 py-0.5 rounded-full border border-slate-300 shadow-sm">
-                                            <span class="text-[8px] font-extrabold text-slate-500 tracking-widest">TIDAK ADA</span>
+                                        <div class="absolute -top-1.5 right-1.5 flex items-center gap-1 bg-slate-200 px-1 py-0.5 rounded border border-slate-300 shadow-sm">
+                                            <span class="text-[7px] font-extrabold text-slate-500 tracking-widest">TIDAK ADA</span>
                                         </div>` :
                                         tStat.state === 'active' ? `
-                                        <div class="absolute -top-2 right-2 flex items-center gap-1.5 bg-white px-2 py-0.5 rounded-full border border-indigo-200 shadow-sm">
+                                        <div class="absolute -top-1.5 right-1.5 flex items-center gap-1 bg-white px-1.5 py-0.5 rounded border border-indigo-200 shadow-sm">
                                             <span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-indigo-500"></span></span>
-                                            <span class="text-[8px] font-extrabold text-indigo-600 tracking-widest">${tStat.label}</span>
+                                            <span class="text-[7px] font-extrabold text-indigo-600 tracking-widest">${tStat.label}</span>
                                         </div>` : `
-                                        <div class="absolute -top-2 right-2 flex items-center gap-1 bg-white px-1.5 py-0.5 rounded-full border border-slate-100 shadow-sm">
-                                            <div class="w-1.5 h-1.5 rounded-full ${tStat.dot}"></div><span class="text-[8px] font-extrabold text-slate-500 tracking-widest">${tStat.label}</span>
+                                        <div class="absolute -top-1.5 right-1.5 flex items-center gap-1 bg-white px-1 py-0.5 rounded border border-slate-100 shadow-sm">
+                                            <div class="w-1.5 h-1.5 rounded-full ${tStat.dot}"></div><span class="text-[7px] font-extrabold text-slate-500 tracking-widest">${tStat.label}</span>
                                         </div>
                                         `}
                                         
-                                        <div class="flex items-center justify-between mb-3 mt-1">
-                                            <label class="flex items-center gap-3 cursor-pointer">
+                                        <div class="flex items-center justify-between mb-2 mt-0.5">
+                                            <label class="flex items-center gap-2 cursor-pointer">
                                                 <input type="checkbox" ${isTDone ? 'checked' : ''} ${tStat.state==='locked' || isTNA ? 'disabled' : ''} onchange="toggleTask('${matkul.id}', 'tugas_${ses.id}', this.checked)" class="cyber-checkbox flex-shrink-0">
-                                                <span class="text-[11px] font-extrabold text-slate-800 ${isTDone || isTNA ? 'line-through opacity-40' : ''}">${ses.taskLabel}</span>
+                                                <span class="text-[10px] font-extrabold text-slate-800 ${isTDone || isTNA ? 'line-through opacity-40' : ''}">${ses.taskLabel}</span>
                                             </label>
                                             <button onclick="toggleNA('${matkul.id}', 'tugas_${ses.id}', ${!isTNA})" class="text-slate-400 hover:text-rose-500 transition-colors" title="${isTNA ? 'Aktifkan Kembali' : 'Tandai Tidak Ada'}">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
                                             </button>
                                         </div>
-                                        <input type="number" placeholder="Nilai" value="${matkul.nilai && matkul.nilai[`nilai_t_${ses.id}`] ? matkul.nilai[`nilai_t_${ses.id}`] : ''}" onchange="updateNilai('${matkul.id}', 'nilai_t_${ses.id}', this.value)" ${tStat.state==='locked' || isTNA ? 'disabled' : ''} class="w-full bg-white/80 border border-slate-200 rounded-lg text-[11px] px-2 py-1.5 text-center font-extrabold text-indigo-700 focus:border-indigo-500 outline-none transition-all disabled:opacity-50 hover:shadow-sm">
+                                        <input type="number" placeholder="Nilai" value="${matkul.nilai && matkul.nilai[`nilai_t_${ses.id}`] ? matkul.nilai[`nilai_t_${ses.id}`] : ''}" onchange="updateNilai('${matkul.id}', 'nilai_t_${ses.id}', this.value)" ${tStat.state==='locked' || isTNA ? 'disabled' : ''} class="w-full bg-white/80 border border-slate-200 rounded text-[10px] px-1.5 py-1 text-center font-extrabold text-indigo-700 focus:border-indigo-500 outline-none transition-all disabled:opacity-50 hover:shadow-sm">
                                     </div>`;
                             }
 
@@ -737,6 +824,22 @@
             expandedHtml += `</div>`;
 
             container.innerHTML = (hasCollapsed ? collapsedHtml : '') + expandedHtml;
+        }
+
+        function showToast(msg, type="info") {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toastMessage');
+            const iconEl = document.getElementById('toastIcon');
+            
+            msgEl.textContent = msg;
+            if(type === 'success') {
+                iconEl.innerHTML = `<div class="bg-emerald-100 text-emerald-600 p-2 rounded-full shadow-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg></div>`;
+            } else {
+                iconEl.innerHTML = `<div class="bg-rose-100 text-rose-600 p-2 rounded-full shadow-sm"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>`;
+            }
+            
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 3000);
         }
 
         init();
