@@ -183,6 +183,7 @@
                             <option value="3">Semester 3</option> <option value="4">Semester 4</option>
                             <option value="5">Semester 5</option> <option value="6">Semester 6</option>
                             <option value="7">Semester 7</option> <option value="8">Semester 8</option>
+                            <option value="9">Semester 9</option> <option value="10">Semester 10</option>
                         </select>
                     </div>
                     <div>
@@ -737,10 +738,19 @@
                             <table class="w-full text-left border-collapse min-w-[1000px]">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">
-                                        <th class="p-4 w-64 sticky left-0 bg-slate-50 z-20 border-r border-slate-200">Mata Kuliah</th>`;
+                                        <th class="p-4 w-64 sticky left-0 bg-slate-50 z-20 border-r border-slate-200 align-top">Mata Kuliah</th>`;
                                         
                                     sessions.forEach(ses => {
-                                        html += `<th class="p-4 text-center min-w-[100px] border-r border-slate-200 last:border-0">${ses.label}</th>`;
+                                        const startVal = semDates[`start_${ses.id}`];
+                                        const endVal = semDates[`end_${ses.id}`];
+                                        const dateLabel = (startVal && endVal) ? `${formatDateShort(startVal)} - ${formatDateShort(endVal)}` : '--/-- - --/--';
+                                        
+                                        html += `<th class="p-4 text-center min-w-[100px] border-r border-slate-200 last:border-0 align-top">
+                                            <div class="flex flex-col items-center justify-center gap-1">
+                                                <span>${ses.label}</span>
+                                                <span class="text-[8px] font-medium bg-slate-200/50 text-slate-500 px-1.5 py-0.5 rounded border border-slate-200/60 lowercase tracking-normal whitespace-nowrap">${dateLabel}</span>
+                                            </div>
+                                        </th>`;
                                     });
 
                                 html += `
@@ -760,10 +770,10 @@
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                 </button>
                                             </div>
-                                            <span class="inline-block px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[9px] font-extrabold uppercase tracking-wide rounded-md mb-1.5">${matkul.kategori}</span>
-                                            <h3 class="font-extrabold text-slate-800 text-sm leading-tight">${matkul.code}</h3>
-                                            <p class="text-[11px] font-medium text-slate-500 mt-0.5 leading-snug line-clamp-2" title="${matkul.name}">${matkul.name}</p>
-                                            <div class="mt-2 text-[10px] text-slate-400 font-medium">
+                                            <h3 class="font-extrabold text-slate-800 text-sm leading-tight line-clamp-2 mb-1" title="${matkul.name}">${matkul.name}</h3>
+                                            <p class="text-[11px] font-medium text-slate-500 italic leading-snug mb-2">${matkul.code}</p>
+                                            <span class="inline-block px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[9px] font-extrabold uppercase tracking-wide rounded-md mb-2">${matkul.kategori}</span>
+                                            <div class="mt-1 text-[10px] text-slate-400 font-medium">
                                                 <div class="truncate w-48">${matkul.dosen1}</div>
                                                 ${matkul.dosen2 ? `<div class="truncate w-48">${matkul.dosen2}</div>` : ''}
                                             </div>
